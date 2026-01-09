@@ -1,0 +1,115 @@
+# =============================================================================
+# ArgoCD Helm Chart Values
+# Chart: https://github.com/argoproj/argo-helm/tree/main/charts/argo-cd
+# =============================================================================
+# Legend:
+#   [CUSTOM]  - Values modified from chart defaults for this module
+#   [DEFAULT] - Chart default values (included for reference)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Global Configuration [DEFAULT]
+# Purpose: Global settings for ArgoCD components.
+# -----------------------------------------------------------------------------
+global:
+  image:
+    repository: quay.io/argoproj/argocd                      # [DEFAULT]
+    # tag: ""                                                # [DEFAULT] Uses chart appVersion
+    imagePullPolicy: IfNotPresent                            # [DEFAULT]
+
+# -----------------------------------------------------------------------------
+# ArgoCD Server
+# Purpose: The API server and UI for ArgoCD.
+# Importance:
+#   - service.type: ClusterIP - We typically expose via Ingress (not LB directly)
+#   - replicas: 1 - Standard availability (increase for HA)
+# -----------------------------------------------------------------------------
+server:
+  replicas: 1                                                # [DEFAULT]
+
+  resources:
+    limits:
+      cpu: 500m                                              # [DEFAULT]
+      memory: 256Mi                                          # [DEFAULT]
+    requests:
+      cpu: 100m                                              # [DEFAULT]
+      memory: 128Mi                                          # [DEFAULT]
+
+  service:
+    type: ClusterIP                                          # [CUSTOM] Default is usually ClusterIP, explicit here
+    servicePortHttp: 80                                      # [DEFAULT]
+    servicePortHttps: 443                                    # [DEFAULT]
+
+  # Ingress Configuration
+  # Purpose: Expose ArgoCD UI externally.
+  ingress:
+    enabled: false                                           # [DEFAULT] - Enable this if you have an Ingress Controller
+    annotations: {}                                          # [DEFAULT]
+    ingressClassName: ""                                     # [DEFAULT]
+    hosts: []                                                # [DEFAULT]
+    tls: []                                                  # [DEFAULT]
+
+  # Config
+  # Purpose: ArgoCD server configuration (argocd-cm).
+  config:
+    url: ""                                                  # [DEFAULT] Base URL for the ArgoCD instance
+
+# -----------------------------------------------------------------------------
+# ArgoCD Repo Server [DEFAULT]
+# Purpose: Manages Git repositories and generates manifests.
+# Importance: High CPU/Memory usage during manifest generation.
+# -----------------------------------------------------------------------------
+repoServer:
+  replicas: 1                                                # [DEFAULT]
+  resources:
+    limits:
+      cpu: 1000m                                             # [DEFAULT]
+      memory: 512Mi                                          # [DEFAULT]
+    requests:
+      cpu: 100m                                              # [DEFAULT]
+      memory: 128Mi                                          # [DEFAULT]
+
+# -----------------------------------------------------------------------------
+# ArgoCD Application Controller [DEFAULT]
+# Purpose: The Kubernetes controller that reconciles Application state.
+# -----------------------------------------------------------------------------
+controller:
+  replicas: 1                                                # [DEFAULT]
+  resources:
+    limits:
+      cpu: 2000m                                             # [DEFAULT]
+      memory: 2048Mi                                         # [DEFAULT]
+    requests:
+      cpu: 100m                                              # [DEFAULT]
+      memory: 512Mi                                          # [DEFAULT]
+
+# -----------------------------------------------------------------------------
+# Redis Configuration [DEFAULT]
+# Purpose: Caching layer for ArgoCD.
+# Importance: Improves performance of UI and reconciliation.
+# -----------------------------------------------------------------------------
+redis:
+  enabled: true                                              # [DEFAULT]
+  image:
+    repository: public.ecr.aws/docker/library/redis          # [DEFAULT]
+    tag: "7.2.4-alpine"                                      # [DEFAULT]
+
+# -----------------------------------------------------------------------------
+# Dex Configuration [DEFAULT]
+# Purpose: Identity provider for SSO.
+# -----------------------------------------------------------------------------
+dex:
+  enabled: true                                              # [DEFAULT]
+
+# -----------------------------------------------------------------------------
+# Config Management [DEFAULT]
+# Purpose: Configuration for ConfigMaps and Secrets.
+# -----------------------------------------------------------------------------
+configs:
+  # General params in argocd-cm
+  params:
+    server.insecure: false                                   # [DEFAULT]
+
+  # Secret config (e.g. OIDC, admin password)
+  secret:
+    createSecret: true                                       # [DEFAULT]
