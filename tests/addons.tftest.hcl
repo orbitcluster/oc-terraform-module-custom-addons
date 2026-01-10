@@ -14,6 +14,7 @@ run "plan" {
     cluster_certificate_authority_data = run.setup.cluster_certificate_authority_data
     cluster_oidc_provider_arn          = run.setup.cluster_oidc_provider_arn
     cluster_oidc_issuer_url            = run.setup.cluster_oidc_issuer_url
+    env                                = run.setup.env
     # vpc_id                             = run.setup.vpc_id # Custom addons dont use vpc_id currently, but keeping for consistency if needed
 
     # Toggles

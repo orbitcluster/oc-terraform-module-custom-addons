@@ -4,7 +4,7 @@
 # https://github.com/istio/istio/tree/master/manifests/charts/istio-control/istio-discovery
 ################################################################################
 
-resource "kubernetes_namespace" "istio_system" {
+resource "kubernetes_namespace_v1" "istio_system" {
   count = var.enable_istio ? 1 : 0
 
   metadata {
@@ -19,9 +19,9 @@ resource "helm_release" "istio_base" {
   repository = "https://istio-release.storage.googleapis.com/charts"
   chart      = "base"
   version    = var.istio_version
-  namespace  = kubernetes_namespace.istio_system[0].metadata[0].name
+  namespace  = kubernetes_namespace_v1.istio_system[0].metadata[0].name
 
-  depends_on = [kubernetes_namespace.istio_system]
+  depends_on = [kubernetes_namespace_v1.istio_system]
 }
 
 resource "helm_release" "istiod" {
@@ -31,7 +31,7 @@ resource "helm_release" "istiod" {
   repository = "https://istio-release.storage.googleapis.com/charts"
   chart      = "istiod"
   version    = var.istio_version
-  namespace  = kubernetes_namespace.istio_system[0].metadata[0].name
+  namespace  = kubernetes_namespace_v1.istio_system[0].metadata[0].name
 
   values = [
     file("${path.module}/yamls/istio-values.yaml")

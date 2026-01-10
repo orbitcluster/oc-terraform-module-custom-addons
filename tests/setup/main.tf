@@ -38,5 +38,5 @@ output "app_id" {
 }
 
 output "env" {
-  value = "test"
+  value = "dev"
 }
