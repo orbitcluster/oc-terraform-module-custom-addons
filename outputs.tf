@@ -14,7 +14,7 @@ output "istiod_release_name" {
 
 output "istio_system_namespace" {
   description = "Namespace where Istio is installed"
-  value       = try(kubernetes_namespace.istio_system[0].metadata[0].name, null)
+  value       = try(kubernetes_namespace_v1.istio_system[0].metadata[0].name, null)
 }
 
 ################################################################################
