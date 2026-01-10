@@ -17,19 +17,19 @@
 # -----------------------------------------------------------------------------
 global:
   # Used to locate istiod.
-  istioNamespace: istio-system                               # [DEFAULT]
+  istioNamespace: istio-system # [DEFAULT]
 
   # Default hub for Istio images.
-  hub: docker.io/istio                                       # [DEFAULT]
+  hub: docker.io/istio # [DEFAULT]
 
   # Default tag for Istio images.
-  tag: ""                                                    # [DEFAULT] - Defaults to chart version
+  tag: "" # [DEFAULT] - Defaults to chart version
 
   # Image pull policy
-  imagePullPolicy: IfNotPresent                              # [DEFAULT]
+  imagePullPolicy: IfNotPresent # [DEFAULT]
 
   # Predefined priority class name to ensure high priority
-  priorityClassName: ""                                      # [DEFAULT]
+  priorityClassName: "" # [DEFAULT]
 
 # -----------------------------------------------------------------------------
 # Pilot (Istiod) Configuration
@@ -40,33 +40,33 @@ global:
 #   - replicas: 1 - Default replica count if autoscaling disabled
 # -----------------------------------------------------------------------------
 pilot:
-  autoscaleEnabled: true                                     # [DEFAULT]
-  autoscaleMin: 1                                            # [DEFAULT]
-  autoscaleMax: 5                                            # [DEFAULT]
-  replicaCount: 1                                            # [DEFAULT]
+  autoscaleEnabled: true # [DEFAULT]
+  autoscaleMin: 1 # [DEFAULT]
+  autoscaleMax: 5 # [DEFAULT]
+  replicaCount: 1 # [DEFAULT]
 
   # Image used for the pilot (istiod)
-  image: pilot                                               # [DEFAULT]
+  image: pilot # [DEFAULT]
 
   # Trace sampling (1.0 = 100%, 0.01 = 1%)
-  traceSampling: 1.0                                         # [DEFAULT]
+  traceSampling: 1.0 # [DEFAULT]
 
   # Resources for Istiod
   # Purpose: Ensures Istiod has guaranteed resources for stability.
   resources:
     requests:
-      cpu: 500m                                              # [DEFAULT]
-      memory: 2048Mi                                         # [DEFAULT]
+      cpu: 500m # [DEFAULT]
+      memory: 512Mi # [CUSTOM] Lowered from 2048Mi
 
   # Environment Variables
   # Purpose: Feature flags and low-level configuration.
-  env: {}                                                    # [DEFAULT]
+  env: {} # [DEFAULT]
 
   # Node Selector / Affinity
   # Purpose: Control where Istiod pods are scheduled
-  nodeSelector: {}                                           # [DEFAULT]
-  affinity: {}                                               # [DEFAULT]
-  tolerations: []                                            # [DEFAULT]
+  nodeSelector: {} # [DEFAULT]
+  affinity: {} # [DEFAULT]
+  tolerations: [] # [DEFAULT]
 
 # -----------------------------------------------------------------------------
 # Telemetry Configuration [DEFAULT]
@@ -74,13 +74,13 @@ pilot:
 # Importance: Controls generation of metrics/traces.
 # -----------------------------------------------------------------------------
 telemetry:
-  enabled: true                                              # [DEFAULT]
+  enabled: true # [DEFAULT]
   v2:
-    enabled: true                                            # [DEFAULT]
+    enabled: true # [DEFAULT]
     metadataExchange:
-      wasmEnabled: false                                     # [DEFAULT]
+      wasmEnabled: false # [DEFAULT]
     prometheus:
-      wasmEnabled: false                                     # [DEFAULT]
+      wasmEnabled: false # [DEFAULT]
 
 # -----------------------------------------------------------------------------
 # Mesh Configuration [DEFAULT]
@@ -90,10 +90,10 @@ telemetry:
 #   - enablePrometheusMerge: true - Merges app metrics with Envoy metrics
 # -----------------------------------------------------------------------------
 meshConfig:
-  enablePrometheusMerge: true                                # [DEFAULT]
-  accessLogFile: "/dev/stdout"                               # [CUSTOM] Enable access logs by default
+  enablePrometheusMerge: true # [DEFAULT]
+  accessLogFile: "/dev/stdout" # [CUSTOM] Enable access logs by default
   defaultConfig:
-    proxyMetadata: {}                                        # [DEFAULT]
+    proxyMetadata: {} # [DEFAULT]
 
 # -----------------------------------------------------------------------------
 # Sidecar Injector Configuration [DEFAULT]
@@ -102,4 +102,4 @@ meshConfig:
 #   - enableNamespacesByDefault: false - Requires explicit namespace labeling
 # -----------------------------------------------------------------------------
 sidecarInjectorWebhook:
-  enableNamespacesByDefault: false                           # [DEFAULT]
+  enableNamespacesByDefault: false # [DEFAULT]
