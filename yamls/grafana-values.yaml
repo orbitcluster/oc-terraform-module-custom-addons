@@ -1,0 +1,112 @@
+# =============================================================================
+# Grafana Helm Chart Values
+# Chart: https://github.com/grafana/helm-charts/tree/main/charts/grafana
+# =============================================================================
+# Legend:
+#   [CUSTOM]  - Values modified from chart defaults for this module
+#   [DEFAULT] - Chart default values (included for reference)
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Replica Configuration [DEFAULT]
+# Purpose: Number of Grafana replicas.
+# -----------------------------------------------------------------------------
+replicas: 1                                                  # [DEFAULT]
+
+# -----------------------------------------------------------------------------
+# Image Configuration [DEFAULT]
+# Purpose: Grafana container image.
+# -----------------------------------------------------------------------------
+image:
+  repository: grafana/grafana                                # [DEFAULT]
+  # tag: ""                                                  # [DEFAULT] Uses appVersion
+  pullPolicy: IfNotPresent                                   # [DEFAULT]
+
+# -----------------------------------------------------------------------------
+# Service Configuration [DEFAULT]
+# Purpose: Expose Grafana UI.
+# -----------------------------------------------------------------------------
+service:
+  type: LoadBalancer                                         # [CUSTOM] Expose via LoadBalancer
+  port: 80                                                   # [DEFAULT]
+  targetPort: 3000                                           # [DEFAULT]
+  annotations: {}                                            # [DEFAULT] Add AWS LB annotations here if needed (e.g. NLB)
+
+# -----------------------------------------------------------------------------
+# Ingress Configuration [DEFAULT]
+# Purpose: Expose Grafana externally.
+# -----------------------------------------------------------------------------
+ingress:
+  enabled: false                                             # [DEFAULT]
+  ingressClassName: nginx                                    # [DEFAULT]
+  annotations: {}                                            # [DEFAULT]
+  hosts:
+    - chart-example.local                                    # [DEFAULT]
+  path: /                                                    # [DEFAULT]
+
+# -----------------------------------------------------------------------------
+# Persistence Configuration
+# Purpose: Persist Grafana dashboards, users, and settings.
+# Importance:
+#   - enabled: false - By default, we use ephemeral storage. Enable for production.
+# -----------------------------------------------------------------------------
+persistence:
+  enabled: false                                             # [CUSTOM] Default is false, explicit here
+  # type: pvc                                                # [DEFAULT]
+  # storageClassName: default                                # [DEFAULT]
+  # accessModes:
+  #   - ReadWriteOnce                                        # [DEFAULT]
+  # size: 10Gi                                               # [DEFAULT]
+
+# -----------------------------------------------------------------------------
+# Administrator Configuration [DEFAULT]
+# Purpose: Initial admin user.
+# -----------------------------------------------------------------------------
+adminUser: admin                                             # [DEFAULT]
+# adminPassword: strongpassword                              # [DEFAULT] Use k8s secret in production!
+
+# -----------------------------------------------------------------------------
+# Plugin Configuration [DEFAULT]
+# Purpose: Install Grafana plugins at startup.
+# -----------------------------------------------------------------------------
+plugins: []                                                  # [DEFAULT]
+# - grafana-clock-panel
+# - grafana-piechart-panel
+
+# -----------------------------------------------------------------------------
+# Datasource Configuration [DEFAULT]
+# Purpose: Automatically configure data sources (e.g. Prometheus).
+# -----------------------------------------------------------------------------
+datasources: {}                                              # [DEFAULT]
+# datasources.yaml:
+#   apiVersion: 1
+#   datasources:
+#   - name: Prometheus
+#     type: prometheus
+#     url: http://prometheus-server.monitoring.svc.cluster.local
+#     access: proxy
+#     isDefault: true
+
+# -----------------------------------------------------------------------------
+# Dashboard Configuration [DEFAULT]
+# Purpose: Provision dashboards from sidecars or configmaps.
+# -----------------------------------------------------------------------------
+dashboardProviders: {}                                       # [DEFAULT]
+dashboards: {}                                               # [DEFAULT]
+
+# -----------------------------------------------------------------------------
+# Grafana.ini Configuration [DEFAULT]
+# Purpose: Main configuration file for Grafana.
+# -----------------------------------------------------------------------------
+grafana.ini:
+  paths:
+    data: /var/lib/grafana/
+    logs: /var/log/grafana/
+    plugins: /var/lib/grafana/plugins
+    provisioning: /etc/grafana/provisioning
+  analytics:
+    check_for_updates: true
+  log:
+    mode: console
+  server:
+    domain: localhost
