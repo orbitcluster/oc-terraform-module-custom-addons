@@ -102,10 +102,5 @@ pushgateway:
 serverFiles:
   alerting_rules.yml: {} # [DEFAULT]
 
+
   # Default scrape configs
-  prometheus.yml:
-    scrape_configs:
-      - job_name: prometheus
-        static_configs:
-          - targets:
-              - localhost:9090

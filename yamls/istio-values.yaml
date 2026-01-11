@@ -23,7 +23,7 @@ global:
   hub: docker.io/istio # [DEFAULT]
 
   # Default tag for Istio images.
-  tag: "" # [DEFAULT] - Defaults to chart version
+  # tag: "" # [DEFAULT] - Defaults to chart version
 
   # Image pull policy
   imagePullPolicy: IfNotPresent # [DEFAULT]
