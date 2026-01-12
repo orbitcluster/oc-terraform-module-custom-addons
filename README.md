@@ -2,6 +2,66 @@
 
 This is the terraform module for creation of additional custom addons for the orbitcluster EKS platform
 
+## Module Architecture
+
+This module implements a **Service Mesh** architecture using **Istio**, serving as the networking foundation for all other addons.
+
+### key Components & Connections
+
+1.  **Istio Core (Foundation)**
+    *   **istio-base**: Installs CRDs.
+    *   **istiod**: The control plane. Use `istio-values.yaml` for configuration.
+    *   **istio-ingress**: The **Single Entry Point** for external traffic. Exposed via a `LoadBalancer` Service.
+
+2.  **Addon Integration (Observability & Ops)**
+    *   **Prometheus**:
+        *   Installed in `monitoring` namespace (labeled `istio-injection=enabled`).
+        *   Sidecar injected for mTLS scraping.
+        *   Exposed via Istio Ingress (`ingressClassName: istio`).
+    *   **Grafana**:
+        *   Uses Prometheus as the Default Datasource (auto-provisioned).
+        *   Exposed via Istio Ingress (`ingressClassName: istio`).
+        *   **Dependency**: Waits for default Prometheus to be ready.
+    *   **Kiali**:
+        *   Visualizes the mesh. Connects to the internal Prometheus service.
+        *   Exposed via Istio Ingress.
+    *   **ArgoCD**:
+        *   **Hub Only**: Installed only if `is_hub = true`.
+        *   Installed in `argocd` namespace (labeled `istio-injection=enabled`).
+        *   Exposed via Istio Ingress.
+
+### Dependency Graph
+
+```mermaid
+graph TD
+    subgraph "Istio Layer"
+        Base[Istio Base] --> Istiod[Istiod Control Plane]
+        Istiod --> Ingress[Istio Ingress Gateway]
+    end
+
+    subgraph "Addons Layer"
+        Ingress --> Prom[Prometheus]
+        Ingress --> Graf[Grafana]
+        Ingress --> Argo[ArgoCD]
+        Ingress --> Kiali
+    end
+
+    Istiod -.->|Sidecar Injection| Prom
+    Istiod -.->|Sidecar Injection| Graf
+    Istiod -.->|Sidecar Injection| Argo
+
+    Prom -->|Datasource| Graf
+    Prom -->|Metrics| Kiali
+
+    %% Styling
+    classDef istio fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef addon fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
+
+    class Base,Istiod,Ingress istio;
+    class Prom,Graf,Argo,Kiali addon;
+```
+
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
