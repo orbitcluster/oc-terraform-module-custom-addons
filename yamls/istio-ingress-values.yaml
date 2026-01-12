@@ -14,8 +14,8 @@
 #   - name: istio-ingressgateway - Standard name for the gateway
 #   - replicas: 1 - Start with 1, rely on autoscaling for more.
 # -----------------------------------------------------------------------------
-name: istio-ingressgateway                                   # [DEFAULT]
-replicaCount: 1                                              # [DEFAULT]
+name: istio-ingressgateway # [DEFAULT]
+replicaCount: 1 # [DEFAULT]
 
 # -----------------------------------------------------------------------------
 # Service Configuration [CUSTOM]
@@ -23,13 +23,14 @@ replicaCount: 1                                              # [DEFAULT]
 # Importance: This is the entry point for all external traffic.
 # -----------------------------------------------------------------------------
 service:
-  type: LoadBalancer                                         # [CUSTOM] Expose externally
-  # annotations: {}                                          # [DEFAULT] Add AWS LB annotations here (e.g. valid certs)
+  type: LoadBalancer # [CUSTOM] Expose externally
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
 
   # External Traffic Policy
   # Cluster: Good for failover, keeps source IP if supported by CNI/Cloud
   # Local: Preserves Source IP, routes only to local nodes (requires many replicas usually)
-  externalTrafficPolicy: Cluster                             # [DEFAULT]
+  externalTrafficPolicy: Cluster # [DEFAULT]
 
   ports:
     - name: status-port
@@ -51,10 +52,10 @@ service:
 # Importance: Ensures high availability during traffic spikes.
 # -----------------------------------------------------------------------------
 autoscaling:
-  enabled: true                                              # [CUSTOM] Enable HPA
-  minReplicas: 1                                             # [CUSTOM] Minimum pods
-  maxReplicas: 5                                             # [CUSTOM] Maximum pods
-  targetCPUUtilizationPercentage: 80                         # [DEFAULT] Target 80% CPU
+  enabled: true # [CUSTOM] Enable HPA
+  minReplicas: 1 # [CUSTOM] Minimum pods
+  maxReplicas: 5 # [CUSTOM] Maximum pods
+  targetCPUUtilizationPercentage: 80 # [DEFAULT] Target 80% CPU
 
 # -----------------------------------------------------------------------------
 # Resource Configuration [DEFAULT]
@@ -65,11 +66,11 @@ autoscaling:
 # -----------------------------------------------------------------------------
 resources:
   limits:
-    cpu: 2000m                                               # [DEFAULT]
-    memory: 1024Mi                                           # [DEFAULT]
+    cpu: 2000m # [DEFAULT]
+    memory: 1024Mi # [DEFAULT]
   requests:
-    cpu: 100m                                                # [DEFAULT]
-    memory: 128Mi                                            # [DEFAULT]
+    cpu: 100m # [DEFAULT]
+    memory: 128Mi # [DEFAULT]
 
 # -----------------------------------------------------------------------------
 # Security Context [DEFAULT]
@@ -89,21 +90,21 @@ securityContext:
 # Labels & Annotations [DEFAULT]
 # Purpose: Add metadata to the gateway pods/service.
 # -----------------------------------------------------------------------------
-labels: {}                                                   # [DEFAULT]
-annotations: {}                                              # [DEFAULT]
+labels: {} # [DEFAULT]
+annotations: {} # [DEFAULT]
 
 # -----------------------------------------------------------------------------
 # RBAC [DEFAULT]
 # Purpose: Control permission for the gateway.
 # -----------------------------------------------------------------------------
 rbac:
-  enabled: true                                              # [DEFAULT]
+  enabled: true # [DEFAULT]
 
 # -----------------------------------------------------------------------------
 # Service Account [DEFAULT]
 # Purpose: Identity for the gateway pods.
 # -----------------------------------------------------------------------------
 serviceAccount:
-  create: true                                               # [DEFAULT]
+  create: true # [DEFAULT]
   # name: ""                                                 # [DEFAULT]
-  annotations: {}                                            # [DEFAULT]
+  annotations: {} # [DEFAULT]
