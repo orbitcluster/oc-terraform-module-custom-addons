@@ -11,9 +11,15 @@ resource "helm_release" "grafana" {
   chart      = "grafana"
   version    = var.grafana_version
   namespace  = local.monitoring_namespace
-  create_namespace = true
+  create_namespace = false
 
   values = [
     file("${path.module}/yamls/grafana-values.yaml")
+  ]
+
+  depends_on = [
+    helm_release.istiod,
+    kubernetes_namespace_v1.monitoring,
+    helm_release.prometheus
   ]
 }

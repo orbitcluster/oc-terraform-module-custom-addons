@@ -43,10 +43,11 @@ server:
   # Ingress Configuration
   # Purpose: Expose ArgoCD UI externally.
   ingress:
-    enabled: false                                           # [DEFAULT] - Enable this if you have an Ingress Controller
+    enabled: true                                            # [CUSTOM] Enabled for Istio
     annotations: {}                                          # [DEFAULT]
-    ingressClassName: ""                                     # [DEFAULT]
-    hosts: []                                                # [DEFAULT]
+    ingressClassName: "istio"                                # [CUSTOM]
+    hosts:
+      - argocd.local                                         # [CUSTOM]
     tls: []                                                  # [DEFAULT]
 
   # Config
