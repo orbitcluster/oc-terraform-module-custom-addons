@@ -13,9 +13,9 @@
 # -----------------------------------------------------------------------------
 global:
   image:
-    repository: quay.io/argoproj/argocd                      # [DEFAULT]
+    repository: quay.io/argoproj/argocd # [DEFAULT]
     # tag: ""                                                # [DEFAULT] Uses chart appVersion
-    imagePullPolicy: IfNotPresent                            # [DEFAULT]
+    imagePullPolicy: IfNotPresent # [DEFAULT]
 
 # -----------------------------------------------------------------------------
 # ArgoCD Server
@@ -25,35 +25,35 @@ global:
 #   - replicas: 1 - Standard availability (increase for HA)
 # -----------------------------------------------------------------------------
 server:
-  replicas: 1                                                # [DEFAULT]
+  replicas: 1 # [DEFAULT]
 
   resources:
     limits:
-      cpu: 500m                                              # [DEFAULT]
-      memory: 256Mi                                          # [DEFAULT]
+      cpu: 500m # [DEFAULT]
+      memory: 256Mi # [DEFAULT]
     requests:
-      cpu: 100m                                              # [DEFAULT]
-      memory: 128Mi                                          # [DEFAULT]
+      cpu: 100m # [DEFAULT]
+      memory: 128Mi # [DEFAULT]
 
   service:
-    type: ClusterIP                                          # [CUSTOM] Default is usually ClusterIP, explicit here
-    servicePortHttp: 80                                      # [DEFAULT]
-    servicePortHttps: 443                                    # [DEFAULT]
+    type: ClusterIP # [CUSTOM] Default is usually ClusterIP, explicit here
+    servicePortHttp: 80 # [DEFAULT]
+    servicePortHttps: 443 # [DEFAULT]
 
   # Ingress Configuration
   # Purpose: Expose ArgoCD UI externally.
   ingress:
-    enabled: true                                            # [CUSTOM] Enabled for Istio
-    annotations: {}                                          # [DEFAULT]
-    ingressClassName: "istio"                                # [CUSTOM]
+    enabled: true # [CUSTOM] Enabled for Istio
+    annotations: {} # [DEFAULT]
+    ingressClassName: "istio" # [CUSTOM]
     hosts:
-      - argocd.local                                         # [CUSTOM]
-    tls: []                                                  # [DEFAULT]
+      - argocd.local # [CUSTOM]
+    tls: [] # [DEFAULT]
 
   # Config
   # Purpose: ArgoCD server configuration (argocd-cm).
   config:
-    url: ""                                                  # [DEFAULT] Base URL for the ArgoCD instance
+    url: "" # [DEFAULT] Base URL for the ArgoCD instance
 
 # -----------------------------------------------------------------------------
 # ArgoCD Repo Server [DEFAULT]
@@ -61,28 +61,28 @@ server:
 # Importance: High CPU/Memory usage during manifest generation.
 # -----------------------------------------------------------------------------
 repoServer:
-  replicas: 1                                                # [DEFAULT]
+  replicas: 1 # [DEFAULT]
   resources:
     limits:
-      cpu: 1000m                                             # [DEFAULT]
-      memory: 512Mi                                          # [DEFAULT]
+      cpu: 1000m # [DEFAULT]
+      memory: 512Mi # [DEFAULT]
     requests:
-      cpu: 100m                                              # [DEFAULT]
-      memory: 128Mi                                          # [DEFAULT]
+      cpu: 100m # [DEFAULT]
+      memory: 128Mi # [DEFAULT]
 
 # -----------------------------------------------------------------------------
 # ArgoCD Application Controller [DEFAULT]
 # Purpose: The Kubernetes controller that reconciles Application state.
 # -----------------------------------------------------------------------------
 controller:
-  replicas: 1                                                # [DEFAULT]
+  replicas: 1 # [DEFAULT]
   resources:
     limits:
-      cpu: 2000m                                             # [DEFAULT]
-      memory: 2048Mi                                         # [DEFAULT]
+      cpu: 2000m # [DEFAULT]
+      memory: 2048Mi # [DEFAULT]
     requests:
-      cpu: 100m                                              # [DEFAULT]
-      memory: 512Mi                                          # [DEFAULT]
+      cpu: 100m # [DEFAULT]
+      memory: 512Mi # [DEFAULT]
 
 # -----------------------------------------------------------------------------
 # Redis Configuration [DEFAULT]
@@ -90,17 +90,19 @@ controller:
 # Importance: Improves performance of UI and reconciliation.
 # -----------------------------------------------------------------------------
 redis:
-  enabled: true                                              # [DEFAULT]
+  enabled: true # [DEFAULT]
   image:
-    repository: public.ecr.aws/docker/library/redis          # [DEFAULT]
-    tag: "7.2.4-alpine"                                      # [DEFAULT]
+    repository: public.ecr.aws/docker/library/redis # [DEFAULT]
+    tag: "7.2.4-alpine" # [DEFAULT]
+  podAnnotations:
+    sidecar.istio.io/inject: "false"
 
 # -----------------------------------------------------------------------------
 # Dex Configuration [DEFAULT]
 # Purpose: Identity provider for SSO.
 # -----------------------------------------------------------------------------
 dex:
-  enabled: true                                              # [DEFAULT]
+  enabled: true # [DEFAULT]
 
 # -----------------------------------------------------------------------------
 # Config Management [DEFAULT]
@@ -109,8 +111,8 @@ dex:
 configs:
   # General params in argocd-cm
   params:
-    server.insecure: false                                   # [DEFAULT]
+    server.insecure: false # [DEFAULT]
 
   # Secret config (e.g. OIDC, admin password)
   secret:
-    createSecret: true                                       # [DEFAULT]
+    createSecret: true # [DEFAULT]
