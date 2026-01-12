@@ -27,7 +27,7 @@ image:
 # Purpose: Expose Grafana UI.
 # -----------------------------------------------------------------------------
 service:
-  type: LoadBalancer                                         # [CUSTOM] Expose via LoadBalancer
+  type: ClusterIP                                          # [CUSTOM] Expose via ClusterIP for Ingress
   port: 80                                                   # [DEFAULT]
   targetPort: 3000                                           # [DEFAULT]
   annotations: {}                                            # [DEFAULT] Add AWS LB annotations here if needed (e.g. NLB)
@@ -37,11 +37,11 @@ service:
 # Purpose: Expose Grafana externally.
 # -----------------------------------------------------------------------------
 ingress:
-  enabled: false                                             # [DEFAULT]
-  ingressClassName: nginx                                    # [DEFAULT]
+  enabled: true                                              # [CUSTOM] Enabled for Istio
+  ingressClassName: istio                                    # [CUSTOM]
   annotations: {}                                            # [DEFAULT]
   hosts:
-    - chart-example.local                                    # [DEFAULT]
+    - grafana.local                                          # [CUSTOM]
   path: /                                                    # [DEFAULT]
 
 # -----------------------------------------------------------------------------
@@ -77,15 +77,15 @@ plugins: []                                                  # [DEFAULT]
 # Datasource Configuration [DEFAULT]
 # Purpose: Automatically configure data sources (e.g. Prometheus).
 # -----------------------------------------------------------------------------
-datasources: {}                                              # [DEFAULT]
-# datasources.yaml:
-#   apiVersion: 1
-#   datasources:
-#   - name: Prometheus
-#     type: prometheus
-#     url: http://prometheus-server.monitoring.svc.cluster.local
-#     access: proxy
-#     isDefault: true
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        url: http://prometheus-server.monitoring.svc.cluster.local
+        access: proxy
+        isDefault: true
 
 # -----------------------------------------------------------------------------
 # Dashboard Configuration [DEFAULT]

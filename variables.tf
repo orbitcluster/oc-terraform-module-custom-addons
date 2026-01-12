@@ -76,8 +76,8 @@ variable "kiali_version" {
   default     = "2.20.0"
 }
 
-variable "enable_argocd" {
-  description = "Enable ArgoCD addon"
+variable "is_hub" {
+  description = "Flag to determine if this is a hub cluster. Controls ArgoCD installation."
   type        = bool
   default     = false
 }

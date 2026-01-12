@@ -8,6 +8,22 @@
 # -----------------------------------------------------------------------------
 deployment:
   replicas: 1                                                # [DEFAULT]
+  ingress:
+    enabled: true
+    class_name: istio
+    override_yaml:
+      spec:
+        rules:
+          - host: kiali.local
+            http:
+              paths:
+                - path: /
+                  pathType: Prefix
+                  backend:
+                    service:
+                      name: kiali
+                      port:
+                        number: 20001
 
 # -----------------------------------------------------------------------------
 # Auth Configuration

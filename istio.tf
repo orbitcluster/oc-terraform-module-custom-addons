@@ -39,3 +39,19 @@ resource "helm_release" "istiod" {
 
   depends_on = [helm_release.istio_base]
 }
+
+resource "helm_release" "istio_ingress" {
+  count = var.enable_istio ? 1 : 0
+
+  name       = "istio-ingress"
+  repository = "https://istio-release.storage.googleapis.com/charts"
+  chart      = "gateway"
+  version    = var.istio_version
+  namespace  = kubernetes_namespace_v1.istio_system[0].metadata[0].name
+
+  values = [
+    file("${path.module}/yamls/istio-ingress-values.yaml")
+  ]
+
+  depends_on = [helm_release.istiod]
+}

@@ -19,7 +19,7 @@ run "plan" {
 
     # Toggles
     enable_istio      = true
-    enable_argocd     = true
+    is_hub            = true
     enable_prometheus = true
     enable_grafana    = true
     enable_kiali      = true
