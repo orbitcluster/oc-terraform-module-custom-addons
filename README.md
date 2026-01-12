@@ -54,8 +54,8 @@ graph TD
     Prom -->|Metrics| Kiali
 
     %% Styling
-    classDef istio fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
-    classDef addon fill:#f3e5f5,stroke:#4a148c,stroke-width:2px;
+    classDef istio fill:#90caf9,stroke:#0d47a1,stroke-width:2px,color:#000;
+    classDef addon fill:#ce93d8,stroke:#4a148c,stroke-width:2px,color:#000;
 
     class Base,Istiod,Ingress istio;
     class Prom,Graf,Argo,Kiali addon;
