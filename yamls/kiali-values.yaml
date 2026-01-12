@@ -7,12 +7,13 @@
 # Deployment Configuration [DEFAULT]
 # -----------------------------------------------------------------------------
 deployment:
-  replicas: 1                                                # [DEFAULT]
+  replicas: 1 # [DEFAULT]
   ingress:
     enabled: true
     class_name: istio
     override_yaml:
       spec:
+        ingressClassName: istio
         rules:
           - host: kiali.local
             http:
@@ -33,7 +34,7 @@ deployment:
 #   - strategy: token - Requires Kubernetes ServiceAccount token
 # -----------------------------------------------------------------------------
 auth:
-  strategy: anonymous                                        # [CUSTOM] Default is often token. Anonymous for ease of access in test.
+  strategy: anonymous # [CUSTOM] Default is often token. Anonymous for ease of access in test.
 
 # -----------------------------------------------------------------------------
 # External Services [DEFAULT]
@@ -41,12 +42,12 @@ auth:
 # -----------------------------------------------------------------------------
 external_services:
   prometheus:
-    url: "http://prometheus-server.monitoring.svc.cluster.local:80"  # [CUSTOM] Pointing to our Prometheus
+    url: "http://prometheus-server.monitoring.svc.cluster.local:80" # [CUSTOM] Pointing to our Prometheus
 
 # -----------------------------------------------------------------------------
 # Service Configuration [DEFAULT]
 # -----------------------------------------------------------------------------
 server:
   service:
-    type: ClusterIP                                          # [DEFAULT]
-    port: 20001                                              # [DEFAULT]
+    type: ClusterIP # [DEFAULT]
+    port: 20001 # [DEFAULT]
