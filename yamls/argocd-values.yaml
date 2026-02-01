@@ -40,6 +40,11 @@ server:
     servicePortHttp: 80 # [DEFAULT]
     servicePortHttps: 443 # [DEFAULT]
 
+  extraArgs:
+    - --rootpath
+    - /argocd
+    - --insecure
+
   # Ingress Configuration
   # Purpose: Expose ArgoCD UI externally.
   ingress:
@@ -53,7 +58,8 @@ server:
   # Config
   # Purpose: ArgoCD server configuration (argocd-cm).
   config:
-    url: "" # [DEFAULT] Base URL for the ArgoCD instance
+    url: "https://orbitcluster.platform.com/argocd" # [CUSTOM] Base URL
+    application.instanceLabelKey: argocd.argoproj.io/instance
 
 # -----------------------------------------------------------------------------
 # ArgoCD Repo Server [DEFAULT]

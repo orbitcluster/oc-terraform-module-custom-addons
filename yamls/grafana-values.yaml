@@ -11,38 +11,38 @@
 # Replica Configuration [DEFAULT]
 # Purpose: Number of Grafana replicas.
 # -----------------------------------------------------------------------------
-replicas: 1                                                  # [DEFAULT]
+replicas: 1 # [DEFAULT]
 
 # -----------------------------------------------------------------------------
 # Image Configuration [DEFAULT]
 # Purpose: Grafana container image.
 # -----------------------------------------------------------------------------
 image:
-  repository: grafana/grafana                                # [DEFAULT]
+  repository: grafana/grafana # [DEFAULT]
   # tag: ""                                                  # [DEFAULT] Uses appVersion
-  pullPolicy: IfNotPresent                                   # [DEFAULT]
+  pullPolicy: IfNotPresent # [DEFAULT]
 
 # -----------------------------------------------------------------------------
 # Service Configuration [DEFAULT]
 # Purpose: Expose Grafana UI.
 # -----------------------------------------------------------------------------
 service:
-  type: ClusterIP                                          # [CUSTOM] Expose via ClusterIP for Ingress
-  port: 80                                                   # [DEFAULT]
-  targetPort: 3000                                           # [DEFAULT]
-  annotations: {}                                            # [DEFAULT] Add AWS LB annotations here if needed (e.g. NLB)
+  type: ClusterIP # [CUSTOM] Expose via ClusterIP for Ingress
+  port: 80 # [DEFAULT]
+  targetPort: 3000 # [DEFAULT]
+  annotations: {} # [DEFAULT] Add AWS LB annotations here if needed (e.g. NLB)
 
 # -----------------------------------------------------------------------------
 # Ingress Configuration [DEFAULT]
 # Purpose: Expose Grafana externally.
 # -----------------------------------------------------------------------------
 ingress:
-  enabled: true                                              # [CUSTOM] Enabled for Istio
-  ingressClassName: istio                                    # [CUSTOM]
-  annotations: {}                                            # [DEFAULT]
+  enabled: true # [CUSTOM] Enabled for Istio
+  ingressClassName: istio # [CUSTOM]
+  annotations: {} # [DEFAULT]
   hosts:
-    - grafana.local                                          # [CUSTOM]
-  path: /                                                    # [DEFAULT]
+    - grafana.local # [CUSTOM]
+  path: / # [DEFAULT]
 
 # -----------------------------------------------------------------------------
 # Persistence Configuration
@@ -51,7 +51,7 @@ ingress:
 #   - enabled: false - By default, we use ephemeral storage. Enable for production.
 # -----------------------------------------------------------------------------
 persistence:
-  enabled: false                                             # [CUSTOM] Default is false, explicit here
+  enabled: false # [CUSTOM] Default is false, explicit here
   # type: pvc                                                # [DEFAULT]
   # storageClassName: default                                # [DEFAULT]
   # accessModes:
@@ -62,14 +62,14 @@ persistence:
 # Administrator Configuration [DEFAULT]
 # Purpose: Initial admin user.
 # -----------------------------------------------------------------------------
-adminUser: admin                                             # [DEFAULT]
+adminUser: admin # [DEFAULT]
 # adminPassword: strongpassword                              # [DEFAULT] Use k8s secret in production!
 
 # -----------------------------------------------------------------------------
 # Plugin Configuration [DEFAULT]
 # Purpose: Install Grafana plugins at startup.
 # -----------------------------------------------------------------------------
-plugins: []                                                  # [DEFAULT]
+plugins: [] # [DEFAULT]
 # - grafana-clock-panel
 # - grafana-piechart-panel
 
@@ -91,8 +91,8 @@ datasources:
 # Dashboard Configuration [DEFAULT]
 # Purpose: Provision dashboards from sidecars or configmaps.
 # -----------------------------------------------------------------------------
-dashboardProviders: {}                                       # [DEFAULT]
-dashboards: {}                                               # [DEFAULT]
+dashboardProviders: {} # [DEFAULT]
+dashboards: {} # [DEFAULT]
 
 # -----------------------------------------------------------------------------
 # Grafana.ini Configuration [DEFAULT]
@@ -109,4 +109,6 @@ grafana.ini:
   log:
     mode: console
   server:
-    domain: localhost
+    domain: orbitcluster.platform.com
+    root_url: "%(protocol)s://%(domain)s/grafana"
+    serve_from_sub_path: true

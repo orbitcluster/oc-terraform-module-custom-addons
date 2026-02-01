@@ -48,6 +48,7 @@ external_services:
 # Service Configuration [DEFAULT]
 # -----------------------------------------------------------------------------
 server:
+  web_root: /kiali # [CUSTOM]
   service:
     type: ClusterIP # [DEFAULT]
     port: 20001 # [DEFAULT]
