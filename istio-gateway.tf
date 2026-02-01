@@ -17,7 +17,7 @@ resource "kubernetes_manifest" "istio_gateway" {
             name     = "http"
             protocol = "HTTP"
           }
-          hosts = ["orbitcluster.platform.com"]
+          hosts = ["*.orbitcluster.platform.com"]
         },
         {
           port = {
@@ -28,7 +28,7 @@ resource "kubernetes_manifest" "istio_gateway" {
           tls = {
             mode = "PASSTHROUGH"
           }
-          hosts = ["orbitcluster.platform.com"]
+          hosts = ["*.orbitcluster.platform.com"]
         }
       ]
     }

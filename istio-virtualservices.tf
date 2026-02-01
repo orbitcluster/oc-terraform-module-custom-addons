@@ -8,17 +8,10 @@ resource "kubernetes_manifest" "argocd_vs" {
       namespace = local.argocd_namespace
     }
     spec = {
-      hosts    = ["orbitcluster.platform.com"]
+      hosts    = ["argocd.orbitcluster.platform.com"]
       gateways = ["${local.istio_system_namespace}/istio-gateway"]
       http = [
         {
-          match = [
-            {
-              uri = {
-                prefix = "/argocd"
-              }
-            }
-          ]
           route = [
             {
               destination = {
@@ -46,17 +39,10 @@ resource "kubernetes_manifest" "grafana_vs" {
       namespace = local.monitoring_namespace
     }
     spec = {
-      hosts    = ["orbitcluster.platform.com"]
+      hosts    = ["grafana.orbitcluster.platform.com"]
       gateways = ["${local.istio_system_namespace}/istio-gateway"]
       http = [
         {
-          match = [
-            {
-              uri = {
-                prefix = "/grafana"
-              }
-            }
-          ]
           route = [
             {
               destination = {
@@ -84,17 +70,10 @@ resource "kubernetes_manifest" "kiali_vs" {
       namespace = local.istio_system_namespace
     }
     spec = {
-      hosts    = ["orbitcluster.platform.com"]
+      hosts    = ["kiali.orbitcluster.platform.com"]
       gateways = ["${local.istio_system_namespace}/istio-gateway"]
       http = [
         {
-          match = [
-            {
-              uri = {
-                prefix = "/kiali"
-              }
-            }
-          ]
           route = [
             {
               destination = {
@@ -122,17 +101,10 @@ resource "kubernetes_manifest" "prometheus_vs" {
       namespace = local.monitoring_namespace
     }
     spec = {
-      hosts    = ["orbitcluster.platform.com"]
+      hosts    = ["prometheus.orbitcluster.platform.com"]
       gateways = ["${local.istio_system_namespace}/istio-gateway"]
       http = [
         {
-          match = [
-            {
-              uri = {
-                prefix = "/prometheus"
-              }
-            }
-          ]
           route = [
             {
               destination = {

@@ -43,11 +43,6 @@ server:
   # Retention Policy
   retention: "15d" # [DEFAULT]
 
-  # External URL
-  extraArgs:
-    web.external-url: "http://orbitcluster.platform.com/prometheus"
-    web.route-prefix: "/prometheus"
-
   # Persistence
   # Purpose: Store metrics on disk (EBS/PVC).
   persistentVolume:

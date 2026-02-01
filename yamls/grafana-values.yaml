@@ -109,6 +109,4 @@ grafana.ini:
   log:
     mode: console
   server:
-    domain: orbitcluster.platform.com
-    root_url: "%(protocol)s://%(domain)s/grafana"
-    serve_from_sub_path: true
+    domain: grafana.orbitcluster.platform.com
