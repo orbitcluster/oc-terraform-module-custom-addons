@@ -1,4 +1,5 @@
 resource "kubectl_manifest" "istio_gateway" {
+  count = var.enable_istio ? 1 : 0
   yaml_body = yamlencode({
     apiVersion = "networking.istio.io/v1beta1"
     kind       = "Gateway"
