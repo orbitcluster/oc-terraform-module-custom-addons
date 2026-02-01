@@ -1,5 +1,6 @@
 # ArgoCD VirtualService
 resource "kubectl_manifest" "argocd_vs" {
+  count = var.is_hub && var.enable_istio ? 1 : 0
   yaml_body = yamlencode({
     apiVersion = "networking.istio.io/v1beta1"
     kind       = "VirtualService"
@@ -38,6 +39,7 @@ resource "kubectl_manifest" "argocd_vs" {
 
 # Grafana VirtualService
 resource "kubectl_manifest" "grafana_vs" {
+  count = var.enable_grafana && var.enable_istio ? 1 : 0
   yaml_body = yamlencode({
     apiVersion = "networking.istio.io/v1beta1"
     kind       = "VirtualService"
@@ -76,6 +78,7 @@ resource "kubectl_manifest" "grafana_vs" {
 
 # Kiali VirtualService
 resource "kubectl_manifest" "kiali_vs" {
+  count = var.enable_kiali && var.enable_istio ? 1 : 0
   yaml_body = yamlencode({
     apiVersion = "networking.istio.io/v1beta1"
     kind       = "VirtualService"
@@ -114,6 +117,7 @@ resource "kubectl_manifest" "kiali_vs" {
 
 # Prometheus VirtualService
 resource "kubectl_manifest" "prometheus_vs" {
+  count = var.enable_prometheus && var.enable_istio ? 1 : 0
   yaml_body = yamlencode({
     apiVersion = "networking.istio.io/v1beta1"
     kind       = "VirtualService"
