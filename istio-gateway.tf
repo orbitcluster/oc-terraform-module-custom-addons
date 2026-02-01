@@ -1,5 +1,5 @@
-resource "kubernetes_manifest" "istio_gateway" {
-  manifest = {
+resource "kubectl_manifest" "istio_gateway" {
+  yaml_body = yamlencode({
     apiVersion = "networking.istio.io/v1beta1"
     kind       = "Gateway"
     metadata = {
@@ -32,7 +32,7 @@ resource "kubernetes_manifest" "istio_gateway" {
         }
       ]
     }
-  }
+  })
 
   depends_on = [helm_release.istiod, helm_release.istio_ingress, helm_release.istio_base]
 }

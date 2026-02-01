@@ -1,6 +1,6 @@
 # ArgoCD VirtualService
-resource "kubernetes_manifest" "argocd_vs" {
-  manifest = {
+resource "kubectl_manifest" "argocd_vs" {
+  yaml_body = yamlencode({
     apiVersion = "networking.istio.io/v1beta1"
     kind       = "VirtualService"
     metadata = {
@@ -32,13 +32,13 @@ resource "kubernetes_manifest" "argocd_vs" {
         }
       ]
     }
-  }
-  depends_on = [helm_release.argocd, kubernetes_manifest.istio_gateway]
+  })
+  depends_on = [helm_release.argocd, kubectl_manifest.istio_gateway]
 }
 
 # Grafana VirtualService
-resource "kubernetes_manifest" "grafana_vs" {
-  manifest = {
+resource "kubectl_manifest" "grafana_vs" {
+  yaml_body = yamlencode({
     apiVersion = "networking.istio.io/v1beta1"
     kind       = "VirtualService"
     metadata = {
@@ -70,13 +70,13 @@ resource "kubernetes_manifest" "grafana_vs" {
         }
       ]
     }
-  }
-  depends_on = [helm_release.grafana, kubernetes_manifest.istio_gateway]
+  })
+  depends_on = [helm_release.grafana, kubectl_manifest.istio_gateway]
 }
 
 # Kiali VirtualService
-resource "kubernetes_manifest" "kiali_vs" {
-  manifest = {
+resource "kubectl_manifest" "kiali_vs" {
+  yaml_body = yamlencode({
     apiVersion = "networking.istio.io/v1beta1"
     kind       = "VirtualService"
     metadata = {
@@ -108,13 +108,13 @@ resource "kubernetes_manifest" "kiali_vs" {
         }
       ]
     }
-  }
-  depends_on = [helm_release.kiali, kubernetes_manifest.istio_gateway]
+  })
+  depends_on = [helm_release.kiali, kubectl_manifest.istio_gateway]
 }
 
 # Prometheus VirtualService
-resource "kubernetes_manifest" "prometheus_vs" {
-  manifest = {
+resource "kubectl_manifest" "prometheus_vs" {
+  yaml_body = yamlencode({
     apiVersion = "networking.istio.io/v1beta1"
     kind       = "VirtualService"
     metadata = {
@@ -146,6 +146,6 @@ resource "kubernetes_manifest" "prometheus_vs" {
         }
       ]
     }
-  }
-  depends_on = [helm_release.prometheus, kubernetes_manifest.istio_gateway]
+  })
+  depends_on = [helm_release.prometheus, kubectl_manifest.istio_gateway]
 }
