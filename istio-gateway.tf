@@ -34,5 +34,5 @@ resource "kubernetes_manifest" "istio_gateway" {
     }
   }
 
-  depends_on = [helm_release.istiod, helm_release.istio_ingress]
+  depends_on = [helm_release.istiod, helm_release.istio_ingress, helm_release.istio_base]
 }
