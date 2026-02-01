@@ -5,6 +5,21 @@ run "setup" {
   }
 }
 
+provider "kubernetes" {
+  host                   = run.setup.cluster_endpoint
+  cluster_ca_certificate = base64decode(run.setup.cluster_certificate_authority_data)
+  token                  = "mock-token"
+}
+
+provider "helm" {
+  kubernetes {
+    host                   = run.setup.cluster_endpoint
+    cluster_ca_certificate = base64decode(run.setup.cluster_certificate_authority_data)
+    token                  = "mock-token"
+  }
+}
+
+
 run "plan" {
   command = plan
 
@@ -64,5 +79,35 @@ run "plan" {
   assert {
     condition     = length(helm_release.kiali) == 1
     error_message = "Kiali Helm release should be created"
+  }
+
+  # Verify Istio Gateway is created
+  assert {
+    condition     = length(kubernetes_manifest.istio_gateway) == 1
+    error_message = "Istio Gateway should be created"
+  }
+
+  # Verify ArgoCD VirtualService is created
+  assert {
+    condition     = length(kubernetes_manifest.argocd_vs) == 1
+    error_message = "ArgoCD VirtualService should be created"
+  }
+
+  # Verify Grafana VirtualService is created
+  assert {
+    condition     = length(kubernetes_manifest.grafana_vs) == 1
+    error_message = "Grafana VirtualService should be created"
+  }
+
+  # Verify Kiali VirtualService is created
+  assert {
+    condition     = length(kubernetes_manifest.kiali_vs) == 1
+    error_message = "Kiali VirtualService should be created"
+  }
+
+  # Verify Prometheus VirtualService is created
+  assert {
+    condition     = length(kubernetes_manifest.prometheus_vs) == 1
+    error_message = "Prometheus VirtualService should be created"
   }
 }
