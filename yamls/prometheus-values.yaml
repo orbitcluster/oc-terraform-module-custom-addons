@@ -12,7 +12,7 @@
 # Purpose: Create ClusterRoles for Prometheus to scrape targets.
 # -----------------------------------------------------------------------------
 rbac:
-  create: true  # [DEFAULT]
+  create: true # [DEFAULT]
 
 # -----------------------------------------------------------------------------
 # Service Account [DEFAULT]
@@ -20,13 +20,13 @@ rbac:
 # -----------------------------------------------------------------------------
 serviceAccounts:
   server:
-    create: true  # [DEFAULT]
+    create: true # [DEFAULT]
   alertmanager:
-    create: true  # [DEFAULT]
+    create: true # [DEFAULT]
   nodeExporter:
-    create: true  # [DEFAULT]
+    create: true # [DEFAULT]
   pushgateway:
-    create: true  # [DEFAULT]
+    create: true # [DEFAULT]
 
 # -----------------------------------------------------------------------------
 # Prometheus Server
@@ -36,20 +36,25 @@ serviceAccounts:
 #   - persistentVolume: enabled/disabled - storage for metrics
 # -----------------------------------------------------------------------------
 server:
-  enabled: true  # [DEFAULT]
+  enabled: true # [DEFAULT]
 
-  fullnameOverride: "prometheus-server"  # [CUSTOM] Simpler name for DNS
+  fullnameOverride: "prometheus-server" # [CUSTOM] Simpler name for DNS
 
   # Retention Policy
-  retention: "15d"  # [DEFAULT]
+  retention: "15d" # [DEFAULT]
+
+  # External URL
+  extraArgs:
+    web.external-url: "http://orbitcluster.platform.com/prometheus"
+    web.route-prefix: "/prometheus"
 
   # Persistence
   # Purpose: Store metrics on disk (EBS/PVC).
   persistentVolume:
-    enabled: true  # [DEFAULT]
-    size: 8Gi  # [DEFAULT]
+    enabled: true # [DEFAULT]
+    size: 8Gi # [DEFAULT]
     accessModes:
-      - ReadWriteOnce  # [DEFAULT]
+      - ReadWriteOnce # [DEFAULT]
 
     # storageClass: "-"                                      # [DEFAULT] uses default class (gp2/gp3)
 
@@ -65,8 +70,8 @@ server:
 
   # Service
   service:
-    type: ClusterIP  # [DEFAULT]
-    servicePort: 80  # [DEFAULT]
+    type: ClusterIP # [DEFAULT]
+    servicePort: 80 # [DEFAULT]
 
   # Ingress
   ingress:
@@ -84,10 +89,10 @@ server:
 # Purpose: Handles alerts sent by Prometheus server.
 # -----------------------------------------------------------------------------
 alertmanager:
-  enabled: true  # [DEFAULT]
+  enabled: true # [DEFAULT]
   persistence:
-    enabled: true  # [DEFAULT]
-    size: 2Gi  # [DEFAULT]
+    enabled: true # [DEFAULT]
+    size: 2Gi # [DEFAULT]
 
 # -----------------------------------------------------------------------------
 # Node Exporter [DEFAULT]
@@ -95,23 +100,23 @@ alertmanager:
 # Importance: Runs as a DaemonSet on every node.
 # -----------------------------------------------------------------------------
 nodeExporter:
-  enabled: true  # [DEFAULT]
-  hostNetwork: true  # [DEFAULT] Required for access to node metrics
-  hostPID: true  # [DEFAULT]
+  enabled: true # [DEFAULT]
+  hostNetwork: true # [DEFAULT] Required for access to node metrics
+  hostPID: true # [DEFAULT]
 
 # -----------------------------------------------------------------------------
 # Pushgateway [DEFAULT]
 # Purpose: Allows ephemeral and batch jobs to expose their metrics.
 # -----------------------------------------------------------------------------
 pushgateway:
-  enabled: true  # [DEFAULT]
+  enabled: true # [DEFAULT]
 
 # -----------------------------------------------------------------------------
 # ConfigMap Configuration [DEFAULT]
 # Purpose: Prometheus configuration file (prometheus.yml).
 # -----------------------------------------------------------------------------
 serverFiles:
-  alerting_rules.yml: {}  # [DEFAULT]
+  alerting_rules.yml: {} # [DEFAULT]
 
 
   # Default scrape configs
