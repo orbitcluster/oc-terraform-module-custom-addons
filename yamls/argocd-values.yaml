@@ -98,6 +98,14 @@ redis:
     sidecar.istio.io/inject: "false"
 
 # -----------------------------------------------------------------------------
+# Redis Secret Init Configuration [CUSTOM]
+# Purpose: Disable Istio sidecar for the one-time init job to prevent hanging.
+# -----------------------------------------------------------------------------
+redisSecretInit:
+  podAnnotations:
+    sidecar.istio.io/inject: "false"
+
+# -----------------------------------------------------------------------------
 # Dex Configuration [DEFAULT]
 # Purpose: Identity provider for SSO.
 # -----------------------------------------------------------------------------
