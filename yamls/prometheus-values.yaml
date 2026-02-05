@@ -48,6 +48,26 @@ server:
     web.external-url: "http://orbitcluster.platform.com/prometheus"
     web.route-prefix: "/prometheus"
 
+  # Probes
+  livenessProbe:
+    httpGet:
+      path: /prometheus/-/healthy
+      port: 9090
+    initialDelaySeconds: 30
+    periodSeconds: 15
+    timeoutSeconds: 10
+    failureThreshold: 3
+    successThreshold: 1
+  readinessProbe:
+    httpGet:
+      path: /prometheus/-/ready
+      port: 9090
+    initialDelaySeconds: 30
+    periodSeconds: 5
+    timeoutSeconds: 4
+    failureThreshold: 3
+    successThreshold: 1
+
   # Persistence
   # Purpose: Store metrics on disk (EBS/PVC).
   persistentVolume:
@@ -81,6 +101,7 @@ server:
       # kubernetes.io/ingress.class: istio
     hosts:
       - prometheus.local
+      - orbitcluster.platform.com
     path: /
     pathType: Prefix
 
