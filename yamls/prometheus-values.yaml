@@ -43,30 +43,10 @@ server:
   # Retention Policy
   retention: "15d" # [DEFAULT]
 
-  # External URL
-  extraArgs:
-    web.external-url: "http://orbitcluster.platform.com/prometheus"
-    web.route-prefix: "/prometheus"
-
-  # Probes
-  livenessProbe:
-    httpGet:
-      path: /prometheus/-/healthy
-      port: 9090
-    initialDelaySeconds: 30
-    periodSeconds: 15
-    timeoutSeconds: 10
-    failureThreshold: 3
-    successThreshold: 1
-  readinessProbe:
-    httpGet:
-      path: /prometheus/-/ready
-      port: 9090
-    initialDelaySeconds: 30
-    periodSeconds: 5
-    timeoutSeconds: 4
-    failureThreshold: 3
-    successThreshold: 1
+  # External URL and Route Prefix
+  # IMPORTANT: Use prefixURL for the chart to auto-construct probe paths correctly
+  prefixURL: "/prometheus"
+  baseURL: "http://orbitcluster.platform.com/prometheus"
 
   # Persistence
   # Purpose: Store metrics on disk (EBS/PVC).
