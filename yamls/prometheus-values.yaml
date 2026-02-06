@@ -43,14 +43,10 @@ server:
   # Retention Policy
   retention: "15d" # [DEFAULT]
 
-  # URL Prefix (Fixes Probes)
+  # External URL and Route Prefix
+  # IMPORTANT: Use prefixURL for the chart to auto-construct probe paths correctly
   prefixURL: "/prometheus"
-
-  # External URL
-  extraArgs:
-    web.external-url: "http://orbitcluster.platform.com/prometheus"
-
-  # Probes
+  baseURL: "http://orbitcluster.platform.com/prometheus"
 
   # Persistence
   # Purpose: Store metrics on disk (EBS/PVC).
