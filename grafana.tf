@@ -6,15 +6,17 @@
 resource "helm_release" "grafana" {
   count = var.enable_grafana ? 1 : 0
 
-  name       = "grafana"
-  repository = "https://grafana.github.io/helm-charts"
-  chart      = "grafana"
-  version    = var.grafana_version
-  namespace  = local.monitoring_namespace
+  name             = "grafana"
+  repository       = "https://grafana.github.io/helm-charts"
+  chart            = "grafana"
+  version          = var.grafana_version
+  namespace        = local.monitoring_namespace
   create_namespace = false
 
   values = [
-    file("${path.module}/yamls/grafana-values.yaml")
+    templatefile("${path.module}/yamls/grafana-values.yaml", {
+      domain_url = var.domain_url
+    })
   ]
 
   depends_on = [

@@ -58,7 +58,7 @@ server:
   # Config
   # Purpose: ArgoCD server configuration (argocd-cm).
   config:
-    url: "https://orbitcluster.platform.com/argocd" # [CUSTOM] Base URL
+    url: "https://${domain_url}/argocd" # [CUSTOM] Base URL
     application.instanceLabelKey: argocd.argoproj.io/instance
 
 # -----------------------------------------------------------------------------
