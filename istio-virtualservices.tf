@@ -9,7 +9,7 @@ resource "kubectl_manifest" "argocd_vs" {
       namespace = local.argocd_namespace
     }
     spec = {
-      hosts    = ["orbitcluster.platform.com"]
+      hosts    = [var.domain_url]
       gateways = ["${local.istio_system_namespace}/istio-gateway"]
       http = [
         {
@@ -48,7 +48,7 @@ resource "kubectl_manifest" "grafana_vs" {
       namespace = local.monitoring_namespace
     }
     spec = {
-      hosts    = ["orbitcluster.platform.com"]
+      hosts    = [var.domain_url]
       gateways = ["${local.istio_system_namespace}/istio-gateway"]
       http = [
         {
@@ -87,7 +87,7 @@ resource "kubectl_manifest" "kiali_vs" {
       namespace = local.istio_system_namespace
     }
     spec = {
-      hosts    = ["orbitcluster.platform.com"]
+      hosts    = [var.domain_url]
       gateways = ["${local.istio_system_namespace}/istio-gateway"]
       http = [
         {
@@ -126,7 +126,7 @@ resource "kubectl_manifest" "prometheus_vs" {
       namespace = local.monitoring_namespace
     }
     spec = {
-      hosts    = ["orbitcluster.platform.com"]
+      hosts    = [var.domain_url]
       gateways = ["${local.istio_system_namespace}/istio-gateway"]
       http = [
         {

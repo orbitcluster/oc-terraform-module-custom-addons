@@ -21,6 +21,12 @@ variable "env" {
   }
 }
 
+variable "domain_url" {
+  description = "Base domain URL for the platform (e.g., orbitcluster.platform.com, xyz.company.com)"
+  type        = string
+  default     = "orbitcluster.platform.com"
+}
+
 ################CLUSTER INFO######################
 
 variable "cluster_name" {

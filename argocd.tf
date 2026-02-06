@@ -17,15 +17,17 @@ resource "kubernetes_namespace_v1" "argocd" {
 resource "helm_release" "argocd" {
   count = var.is_hub ? 1 : 0
 
-  name       = "argocd"
-  repository = "https://argoproj.github.io/argo-helm"
-  chart      = "argo-cd"
-  version    = var.argocd_version
-  namespace  = local.argocd_namespace
+  name             = "argocd"
+  repository       = "https://argoproj.github.io/argo-helm"
+  chart            = "argo-cd"
+  version          = var.argocd_version
+  namespace        = local.argocd_namespace
   create_namespace = false
 
   values = [
-    file("${path.module}/yamls/argocd-values.yaml")
+    templatefile("${path.module}/yamls/argocd-values.yaml", {
+      domain_url = var.domain_url
+    })
   ]
 
   depends_on = [

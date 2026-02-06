@@ -46,7 +46,7 @@ server:
   # External URL and Route Prefix
   # IMPORTANT: Use prefixURL for the chart to auto-construct probe paths correctly
   prefixURL: "/prometheus"
-  baseURL: "http://orbitcluster.platform.com/prometheus"
+  baseURL: "http://${domain_url}/prometheus"
 
   # Persistence
   # Purpose: Store metrics on disk (EBS/PVC).
@@ -81,7 +81,7 @@ server:
       # kubernetes.io/ingress.class: istio
     hosts:
       - prometheus.local
-      - orbitcluster.platform.com
+      - ${domain_url}
     path: /
     pathType: Prefix
 
