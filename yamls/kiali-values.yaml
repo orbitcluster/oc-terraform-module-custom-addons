@@ -42,7 +42,7 @@ auth:
 # -----------------------------------------------------------------------------
 external_services:
   prometheus:
-    url: "http://prometheus-server.monitoring.svc.cluster.local:80" # [CUSTOM] Pointing to our Prometheus
+    url: "http://prometheus-server.monitoring.svc.cluster.local:80/prometheus" # [CUSTOM] Pointing to our Prometheus
 
 # -----------------------------------------------------------------------------
 # Service Configuration [DEFAULT]
