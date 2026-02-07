@@ -3,6 +3,17 @@
 # https://github.com/grafana/helm-charts/tree/main/charts/grafana
 ################################################################################
 
+locals {
+  # ArgoCD dashboard configuration - only included for hub clusters
+  argocd_dashboard = var.is_hub ? {
+    argocd = {
+      gnetId     = 14584
+      revision   = 1
+      datasource = "Prometheus"
+    }
+  } : {}
+}
+
 resource "helm_release" "grafana" {
   count = var.enable_grafana ? 1 : 0
 
@@ -16,7 +27,13 @@ resource "helm_release" "grafana" {
   values = [
     templatefile("${path.module}/yamls/grafana-values.yaml", {
       domain_url = var.domain_url
-    })
+    }),
+    # Conditionally add ArgoCD dashboard for hub clusters
+    var.is_hub ? yamlencode({
+      dashboards = {
+        default = local.argocd_dashboard
+      }
+    }) : ""
   ]
 
   depends_on = [
