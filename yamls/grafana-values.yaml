@@ -83,16 +83,51 @@ datasources:
     datasources:
       - name: Prometheus
         type: prometheus
-        url: http://prometheus-server.monitoring.svc.cluster.local
+        url: http://prometheus-server.monitoring.svc.cluster.local:80/prometheus
         access: proxy
         isDefault: true
 
 # -----------------------------------------------------------------------------
-# Dashboard Configuration [DEFAULT]
-# Purpose: Provision dashboards from sidecars or configmaps.
+# Dashboard Configuration [CUSTOM]
+# Purpose: Provision dashboards from Grafana.com.
 # -----------------------------------------------------------------------------
-dashboardProviders: {} # [DEFAULT]
-dashboards: {} # [DEFAULT]
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+      - name: 'default'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/default
+
+dashboards:
+  default:
+    # Node Exporter Full - Comprehensive node/host metrics
+    node-exporter:
+      gnetId: 1860
+      revision: 37
+      datasource: Prometheus
+    # Istio Mesh Dashboard - Service mesh overview
+    istio-mesh:
+      gnetId: 7639
+      revision: 1
+      datasource: Prometheus
+    # Istio Control Plane - Control plane health
+    istio-control-plane:
+      gnetId: 7645
+      revision: 1
+      datasource: Prometheus
+%{ if is_hub }
+    # ArgoCD Dashboard - GitOps operational metrics (hub only)
+    argocd:
+      gnetId: 14584
+      revision: 1
+      datasource: Prometheus
+%{ endif }
 
 # -----------------------------------------------------------------------------
 # Grafana.ini Configuration [DEFAULT]

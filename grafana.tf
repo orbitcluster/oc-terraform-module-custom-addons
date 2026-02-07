@@ -16,6 +16,7 @@ resource "helm_release" "grafana" {
   values = [
     templatefile("${path.module}/yamls/grafana-values.yaml", {
       domain_url = var.domain_url
+      is_hub     = var.is_hub
     })
   ]
 
