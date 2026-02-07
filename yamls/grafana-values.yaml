@@ -121,13 +121,7 @@ dashboards:
       gnetId: 7645
       revision: 1
       datasource: Prometheus
-%{ if is_hub }
-    # ArgoCD Dashboard - GitOps operational metrics (hub only)
-    argocd:
-      gnetId: 14584
-      revision: 1
-      datasource: Prometheus
-%{ endif }
+    # NOTE: ArgoCD dashboard (gnetId: 14584) is conditionally added via grafana.tf for hub clusters
 
 # -----------------------------------------------------------------------------
 # Grafana.ini Configuration [DEFAULT]
