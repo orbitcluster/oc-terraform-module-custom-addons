@@ -46,7 +46,8 @@ resource "aws_iam_role" "argocd_hub_assumable" {
 
   lifecycle {
     precondition {
-      condition     = !var.is_hub || var.hub_cluster_name == ""
+      # If is_hub = false, hub_cluster_name must be provided
+      condition     = var.is_hub || var.hub_cluster_name != ""
       error_message = "hub_cluster_name must be provided when is_hub = false"
     }
     precondition {
