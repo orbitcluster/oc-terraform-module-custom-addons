@@ -40,3 +40,7 @@ output "app_id" {
 output "env" {
   value = "dev"
 }
+
+output "hub_cluster_name" {
+  value = "hub-test-cluster"
+}

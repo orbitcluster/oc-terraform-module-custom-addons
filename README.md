@@ -30,6 +30,35 @@ This module implements a **Service Mesh** architecture using **Istio**, serving 
         *   Installed in `argocd` namespace (labeled `istio-injection=enabled`).
         *   Exposed via Istio Ingress.
 
+### Why Argocd Spoke Role is Needed
+
+When `is_hub = false`, this module creates an IAM role (`${cluster_name}-argocd-hub-assumable`) that enables the hub cluster's ArgoCD to deploy applications to this spoke cluster.
+
+**Authentication Flow:**
+
+```
+1. Hub ArgoCD Pod → Hub IRSA Role (via Web Identity)
+   ArgoCD uses service account to assume hub's ArgoCD role
+
+2. Hub Role → Spoke Role (via sts:AssumeRole)
+   Hub role assumes spoke's argocd-hub-assumable role
+
+3. Get K8s Token (using spoke role credentials)
+   Calls eks:DescribeCluster on spoke cluster to generate auth token
+
+4. Deploy to Spoke
+   ArgoCD uses the token to authenticate and deploy resources
+```
+
+**Configuration Required:**
+```hcl
+is_hub           = false
+hub_cluster_name = "your-hub-cluster-name"  # Required
+hub_account_id   = ""                        # Optional, defaults to current account
+```
+
+**Output:** Use `argocd_spoke_role_arn` in hub-spoke-connector configuration.
+
 ### Dependency Graph
 
 ```mermaid
@@ -90,6 +119,9 @@ No modules.
 
 | Name | Type |
 |------|------|
+| [aws_iam_policy.argocd_eks_describe](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_policy) | resource |
+| [aws_iam_role.argocd_hub_assumable](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
+| [aws_iam_role_policy_attachment.argocd_eks_describe](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
 | [helm_release.argocd](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.grafana](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [helm_release.istio_base](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
@@ -106,6 +138,7 @@ No modules.
 | [kubernetes_namespace_v1.argocd](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace_v1) | resource |
 | [kubernetes_namespace_v1.istio_system](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace_v1) | resource |
 | [kubernetes_namespace_v1.monitoring](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/namespace_v1) | resource |
+| [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
 | [aws_partition.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/partition) | data source |
 | [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 
@@ -128,6 +161,8 @@ No modules.
 | <a name="input_enable_prometheus"></a> [enable\_prometheus](#input\_enable\_prometheus) | Enable Prometheus addon | `bool` | `false` | no |
 | <a name="input_env"></a> [env](#input\_env) | Environment name (dev, staging, prod) | `string` | n/a | yes |
 | <a name="input_grafana_version"></a> [grafana\_version](#input\_grafana\_version) | Version of the Grafana Helm chart | `string` | `"8.5.1"` | no |
+| <a name="input_hub_account_id"></a> [hub\_account\_id](#input\_hub\_account\_id) | AWS account ID where the hub cluster resides. Defaults to current account if not specified. | `string` | `""` | no |
+| <a name="input_hub_cluster_name"></a> [hub\_cluster\_name](#input\_hub\_cluster\_name) | Name of the hub EKS cluster. Required when is\_hub = false for spoke role trust policy. | `string` | `""` | no |
 | <a name="input_is_hub"></a> [is\_hub](#input\_is\_hub) | Flag to determine if this is a hub cluster. Controls ArgoCD installation. | `bool` | `false` | no |
 | <a name="input_istio_version"></a> [istio\_version](#input\_istio\_version) | Version of the Istio Helm chart | `string` | `"1.28.2"` | no |
 | <a name="input_kiali_version"></a> [kiali\_version](#input\_kiali\_version) | Version of the Kiali Helm chart | `string` | `"2.20.0"` | no |
@@ -140,6 +175,8 @@ No modules.
 |------|-------------|
 | <a name="output_argocd_namespace"></a> [argocd\_namespace](#output\_argocd\_namespace) | Namespace where ArgoCD is installed |
 | <a name="output_argocd_release_name"></a> [argocd\_release\_name](#output\_argocd\_release\_name) | Name of the ArgoCD Helm release |
+| <a name="output_argocd_spoke_role_arn"></a> [argocd\_spoke\_role\_arn](#output\_argocd\_spoke\_role\_arn) | IAM role ARN for hub ArgoCD to assume (only for spoke clusters) |
+| <a name="output_argocd_spoke_role_name"></a> [argocd\_spoke\_role\_name](#output\_argocd\_spoke\_role\_name) | IAM role name for hub ArgoCD to assume (only for spoke clusters) |
 | <a name="output_grafana_release_name"></a> [grafana\_release\_name](#output\_grafana\_release\_name) | Name of the Grafana Helm release |
 | <a name="output_istio_base_release_name"></a> [istio\_base\_release\_name](#output\_istio\_base\_release\_name) | Name of the Istio Base Helm release |
 | <a name="output_istio_system_namespace"></a> [istio\_system\_namespace](#output\_istio\_system\_namespace) | Namespace where Istio is installed |

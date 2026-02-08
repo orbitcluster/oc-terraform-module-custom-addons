@@ -68,3 +68,17 @@ output "kiali_namespace" {
   description = "Namespace where Kiali is installed"
   value       = try(helm_release.kiali[0].namespace, null)
 }
+
+################################################################################
+# Spoke ArgoCD Role Outputs
+################################################################################
+
+output "argocd_spoke_role_arn" {
+  description = "IAM role ARN for hub ArgoCD to assume (only for spoke clusters)"
+  value       = try(aws_iam_role.argocd_hub_assumable[0].arn, null)
+}
+
+output "argocd_spoke_role_name" {
+  description = "IAM role name for hub ArgoCD to assume (only for spoke clusters)"
+  value       = try(aws_iam_role.argocd_hub_assumable[0].name, null)
+}
