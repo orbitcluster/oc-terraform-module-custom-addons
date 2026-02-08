@@ -70,11 +70,10 @@ resource "aws_iam_policy" "argocd_eks_describe" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
-      Sid    = "DescribeEKS"
-      Effect = "Allow"
-      Action = ["eks:DescribeCluster"]
-      # checkov:skip=CKV_AWS_355:EKS describe requires wildcard or specific cluster ARN
-      Resource = "*"
+      Sid      = "DescribeEKS"
+      Effect   = "Allow"
+      Action   = ["eks:DescribeCluster"]
+      Resource = "arn:aws:eks:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:cluster/${var.cluster_name}"
     }]
   })
 
