@@ -130,3 +130,29 @@ variable "tags" {
 }
 
 ##################################################
+
+################HUB-SPOKE CONFIG##################
+
+variable "hub_cluster_name" {
+  description = "Name of the hub EKS cluster. Required when is_hub = false for spoke role trust policy."
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = var.hub_cluster_name == "" || can(regex("^[a-zA-Z0-9-]+$", var.hub_cluster_name))
+    error_message = "hub_cluster_name must contain only alphanumeric characters and hyphens"
+  }
+}
+
+variable "hub_account_id" {
+  description = "AWS account ID where the hub cluster resides. Defaults to current account if not specified."
+  type        = string
+  default     = ""
+
+  validation {
+    condition     = var.hub_account_id == "" || can(regex("^[0-9]{12}$", var.hub_account_id))
+    error_message = "hub_account_id must be a 12-digit AWS account ID"
+  }
+}
+
+##################################################
