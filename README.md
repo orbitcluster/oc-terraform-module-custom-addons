@@ -30,6 +30,35 @@ This module implements a **Service Mesh** architecture using **Istio**, serving 
         *   Installed in `argocd` namespace (labeled `istio-injection=enabled`).
         *   Exposed via Istio Ingress.
 
+### Why Argocd Spoke Role is Needed
+
+When `is_hub = false`, this module creates an IAM role (`${cluster_name}-argocd-hub-assumable`) that enables the hub cluster's ArgoCD to deploy applications to this spoke cluster.
+
+**Authentication Flow:**
+
+```
+1. Hub ArgoCD Pod → Hub IRSA Role (via Web Identity)
+   ArgoCD uses service account to assume hub's ArgoCD role
+
+2. Hub Role → Spoke Role (via sts:AssumeRole)
+   Hub role assumes spoke's argocd-hub-assumable role
+
+3. Get K8s Token (using spoke role credentials)
+   Calls eks:DescribeCluster on spoke cluster to generate auth token
+
+4. Deploy to Spoke
+   ArgoCD uses the token to authenticate and deploy resources
+```
+
+**Configuration Required:**
+```hcl
+is_hub           = false
+hub_cluster_name = "your-hub-cluster-name"  # Required
+hub_account_id   = ""                        # Optional, defaults to current account
+```
+
+**Output:** Use `argocd_spoke_role_arn` in hub-spoke-connector configuration.
+
 ### Dependency Graph
 
 ```mermaid
