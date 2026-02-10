@@ -9,4 +9,7 @@ locals {
   istio_system_namespace = "istio-system"
   argocd_namespace       = "argocd"
   monitoring_namespace   = "monitoring"
+
+  # OIDC Provider for IRSA
+  oidc_provider = replace(var.cluster_oidc_issuer_url, "https://", "")
 }
