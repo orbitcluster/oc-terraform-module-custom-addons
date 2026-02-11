@@ -81,6 +81,9 @@ repoServer:
 # Purpose: The Kubernetes controller that reconciles Application state.
 # -----------------------------------------------------------------------------
 controller:
+  serviceAccount:
+    annotations:
+      eks.amazonaws.com/role-arn: ${argocd_iam_role_arn}
   replicas: 1 # [DEFAULT]
   resources:
     limits:
