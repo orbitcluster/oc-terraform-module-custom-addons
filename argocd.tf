@@ -26,7 +26,8 @@ resource "helm_release" "argocd" {
 
   values = [
     templatefile("${path.module}/yamls/argocd-values.yaml", {
-      domain_url = var.domain_url
+      domain_url          = var.domain_url
+      argocd_iam_role_arn = aws_iam_role.argocd_spoke_access[0].arn
     })
   ]
 
