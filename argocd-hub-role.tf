@@ -24,7 +24,7 @@ resource "aws_iam_role" "argocd_spoke_access" {
       Action = "sts:AssumeRoleWithWebIdentity"
       Condition = {
         StringEquals = {
-          "${local.oidc_provider}:sub" = "system:serviceaccount:${local.argocd_namespace}:argocd-application-controller"
+          "${local.oidc_provider}:sub" = ["system:serviceaccount:${local.argocd_namespace}:argocd-application-controller", "system:serviceaccount:${local.argocd_namespace}:argocd-repo-server"]
           "${local.oidc_provider}:aud" = "sts.amazonaws.com"
         }
       }
@@ -69,6 +69,32 @@ resource "aws_iam_role_policy" "argocd_eks_describe" {
       Sid      = "DescribeEKS"
       Effect   = "Allow"
       Action   = "eks:DescribeCluster"
+      Resource = "*"
+    }]
+  })
+}
+
+# 4. ECR Access Policy
+# Allows Repo Server to fetch charts from ECR
+resource "aws_iam_role_policy" "argocd_ecr_access" {
+  count = var.is_hub ? 1 : 0
+  name  = "argocd-ecr-access"
+  role  = aws_iam_role.argocd_spoke_access[0].id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Action = [
+        "ecr:GetAuthorizationToken",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage",
+        "ecr:DescribeRepositories",
+        "ecr:ListImages",
+        "ecr:DescribeImages",
+        "ecr:GetRepositoryPolicy"
+      ]
       Resource = "*"
     }]
   })

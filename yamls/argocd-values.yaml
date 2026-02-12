@@ -67,6 +67,9 @@ server:
 # Importance: High CPU/Memory usage during manifest generation.
 # -----------------------------------------------------------------------------
 repoServer:
+  serviceAccount:
+    annotations:
+      eks.amazonaws.com/role-arn: ${argocd_iam_role_arn}
   replicas: 1 # [DEFAULT]
   resources:
     limits:
