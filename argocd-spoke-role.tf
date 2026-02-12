@@ -89,3 +89,33 @@ resource "aws_iam_role_policy_attachment" "argocd_eks_describe" {
   role       = aws_iam_role.argocd_hub_assumable[0].name
   policy_arn = aws_iam_policy.argocd_eks_describe[0].arn
 }
+
+################################################################################
+# EKS Access Entry - Cluster Admin Access
+# Grants the Hub ArgoCD role access to the cluster via EKS Access API
+################################################################################
+
+resource "aws_eks_access_entry" "argocd_hub_access" {
+  count = var.is_hub ? 0 : 1
+
+  cluster_name  = var.cluster_name
+  principal_arn = aws_iam_role.argocd_hub_assumable[0].arn
+  type          = "STANDARD"
+
+  tags = merge(var.tags, {
+    Name      = "${var.cluster_name}-argocd-access-entry"
+    ManagedBy = "terraform-custom-addons"
+  })
+}
+
+resource "aws_eks_access_policy_association" "argocd_hub_admin" {
+  count = var.is_hub ? 0 : 1
+
+  cluster_name  = var.cluster_name
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+  principal_arn = aws_iam_role.argocd_hub_assumable[0].arn
+
+  access_scope {
+    type = "cluster"
+  }
+}
