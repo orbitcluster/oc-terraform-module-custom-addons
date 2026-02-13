@@ -139,24 +139,24 @@ resource "kubernetes_cron_job_v1" "argocd_ecr_updater" {
               name  = "updater"
               image = "amazon/aws-cli:latest"
               image_pull_policy = "IfNotPresent"
-              
+
               command = ["/bin/sh", "-c"]
               args = [<<EOT
                 # Install kubectl
                 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
                 chmod +x kubectl
                 mv kubectl /usr/local/bin/
-                
+
                 # Get Token
                 TOKEN=$(aws ecr get-login-password --region ${data.aws_region.current.name})
-                
+
                 # Create Patch
                 # Note: We use string concatenation for JSON to avoid escaping hell
                 PATCH="{\"data\":{\"password\":\"$(echo -n $TOKEN | base64 | tr -d '\n')\",\"username\":\"$(echo -n 'AWS' | base64 | tr -d '\n')\"}}"
-                
+
                 # Apply Patch
                 kubectl patch secret ${local.ecr_secret_name} -n ${local.argocd_namespace} -p "$PATCH"
-                
+
                 echo "Secret patched successfully"
               EOT
               ]
