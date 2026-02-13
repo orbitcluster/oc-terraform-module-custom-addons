@@ -79,6 +79,11 @@ repoServer:
       cpu: 100m # [DEFAULT]
       memory: 128Mi # [DEFAULT]
 
+  # Inject AWS_REGION for SDK
+  extraEnv:
+    - name: AWS_REGION
+      value: "${aws_region}"
+
 # -----------------------------------------------------------------------------
 # ArgoCD Application Controller [DEFAULT]
 # Purpose: The Kubernetes controller that reconciles Application state.
@@ -136,3 +141,15 @@ configs:
   # Secret config (e.g. OIDC, admin password)
   secret:
     createSecret: true # [DEFAULT]
+
+  # Enable OCI support
+  cm:
+    "helm.oci": "true"
+
+  # Register ECR registry for IRSA authentication
+  repositories:
+    aws-ecr-${aws_region}:
+      url: "${aws_account_id}.dkr.ecr.${aws_region}.amazonaws.com"
+      type: "helm"
+      name: "aws-ecr-${aws_region}"
+      enableOCI: "true"
