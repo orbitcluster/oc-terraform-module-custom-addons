@@ -153,9 +153,3 @@ configs:
       type: "helm"
       name: "aws-ecr-${aws_region}"
       enableOCI: "true"
-
-  # -----------------------------------------------------------------------------
-  # ECR Updater CronJob [CUSTOM]
-  # Purpose: Update ECR token in argocd-repo-aws-ecr-${aws_region} secret
-  # Implementation: Uses extraObjects to deploy raw K8s manifests
-  # -----------------------------------------------------------------------------
