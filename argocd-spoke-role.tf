@@ -4,12 +4,7 @@
 # This is only created for spoke clusters (is_hub = false)
 ################################################################################
 
-data "aws_caller_identity" "current" {}
-
 locals {
-  # Use provided hub account ID or default to current account
-  hub_account_id = var.hub_account_id != "" ? var.hub_account_id : data.aws_caller_identity.current.account_id
-
   # Construct the hub's ArgoCD role ARN using naming convention
   hub_argocd_role_arn = "arn:aws:iam::${local.hub_account_id}:role/${var.hub_cluster_name}-argocd-spoke-access"
 

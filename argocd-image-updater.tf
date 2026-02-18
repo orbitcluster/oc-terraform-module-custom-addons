@@ -19,8 +19,8 @@ resource "helm_release" "argocd_image_updater" {
         registries = [
           {
             name    = "ECR"
-            api_url = "https://${data.aws_account.current.id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com"
-            prefix  = "${data.aws_account.current.id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com"
+            api_url = "https://${local.hub_account_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com"
+            prefix  = "${local.hub_account_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com"
             ping    = true
             # Reuse the secret managed by argocd-ecr-updater CronJob
             credentials = "secret:argocd-repo-aws-ecr-${data.aws_region.current.name}"
