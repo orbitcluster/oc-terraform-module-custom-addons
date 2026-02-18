@@ -137,6 +137,7 @@ configs:
   # General params in argocd-cm
   params:
     server.insecure: false # [DEFAULT]
+    timeout.reconciliation: "60s" # [CUSTOM] Reduced from default 180s
 
   # Secret config (e.g. OIDC, admin password)
   secret:

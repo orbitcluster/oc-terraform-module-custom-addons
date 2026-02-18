@@ -70,6 +70,7 @@ variable "istio_version" {
   default     = "1.28.2"
 }
 
+
 variable "enable_kiali" {
   description = "Enable Kiali addon"
   type        = bool

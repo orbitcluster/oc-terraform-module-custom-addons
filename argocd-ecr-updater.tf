@@ -10,7 +10,35 @@ locals {
   ecr_updater_role_name = "${var.cluster_name}-argocd-ecr-updater"
 }
 
-# 1. IAM Role for ECR Updater (IRSA)
+# 1. Secret for ECR Credentials (Placeholder)
+resource "kubernetes_secret" "ecr_secret" {
+  count = var.is_hub ? 1 : 0
+
+  metadata {
+    name      = local.ecr_secret_name
+    namespace = local.argocd_namespace
+    labels = {
+      "argocd.argoproj.io/secret-type" = "repository"
+    }
+  }
+
+  type = "Opaque"
+
+  data = {
+    # Will be populated by CronJob
+    ".dockerconfigjson" = "{\"auths\":{}}"
+  }
+
+  lifecycle {
+    ignore_changes = [data]
+  }
+
+  depends_on = [
+    kubernetes_namespace_v1.argocd
+  ]
+}
+
+# 2. IAM Role for ECR Updater (IRSA)
 resource "aws_iam_role" "argocd_ecr_updater" {
   count = var.is_hub ? 1 : 0
   name  = local.ecr_updater_role_name
