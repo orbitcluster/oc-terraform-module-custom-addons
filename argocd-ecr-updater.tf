@@ -10,33 +10,7 @@ locals {
   ecr_updater_role_name = "${var.cluster_name}-argocd-ecr-updater"
 }
 
-# 1. Secret for ECR Credentials (Placeholder)
-resource "kubernetes_secret" "ecr_secret" {
-  count = var.is_hub ? 1 : 0
 
-  metadata {
-    name      = local.ecr_secret_name
-    namespace = local.argocd_namespace
-    labels = {
-      "argocd.argoproj.io/secret-type" = "repository"
-    }
-  }
-
-  type = "Opaque"
-
-  data = {
-    # Will be populated by CronJob
-    ".dockerconfigjson" = "{\"auths\":{}}"
-  }
-
-  lifecycle {
-    ignore_changes = [data]
-  }
-
-  depends_on = [
-    kubernetes_namespace_v1.argocd
-  ]
-}
 
 # 2. IAM Role for ECR Updater (IRSA)
 resource "aws_iam_role" "argocd_ecr_updater" {
@@ -112,9 +86,9 @@ resource "kubernetes_role" "argocd_secret_patcher" {
   }
 
   rule {
-    api_groups = [""]
-    resources  = ["secrets"]
-    verbs      = ["get", "patch"]
+    api_groups     = [""]
+    resources      = ["secrets"]
+    verbs          = ["get", "patch"]
     resource_names = [local.ecr_secret_name]
   }
 }
@@ -164,8 +138,8 @@ resource "kubernetes_cron_job_v1" "argocd_ecr_updater" {
             restart_policy       = "OnFailure"
 
             container {
-              name  = "updater"
-              image = "amazon/aws-cli:latest"
+              name              = "updater"
+              image             = "amazon/aws-cli:latest"
               image_pull_policy = "IfNotPresent"
 
               command = ["/bin/sh", "-c"]
