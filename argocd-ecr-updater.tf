@@ -52,7 +52,14 @@ resource "aws_iam_role_policy" "argocd_ecr_updater_policy" {
     Statement = [{
       Effect = "Allow"
       Action = [
-        "ecr:GetAuthorizationToken"
+        "ecr:GetAuthorizationToken",
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:GetDownloadUrlForLayer",
+        "ecr:BatchGetImage",
+        "ecr:ListImages",
+        "ecr:DescribeImages",
+        "ecr:DescribeRepositories",
+        "ecr:GetRepositoryPolicy"
       ]
       Resource = "*"
     }]
