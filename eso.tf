@@ -6,7 +6,7 @@ locals {
   eso_namespace           = "external-secrets"
   eso_serviceaccount_name = "eso-service-account"
 
-  eso_role_name = "${var.cluster_name}-eso-hub-ecr-role"
+  eso_role_name = "eso-hub-ecr-role"
 }
 
 ################################################################################
@@ -55,7 +55,7 @@ resource "aws_iam_role" "eso_hub_ecr_role" {
 resource "aws_iam_policy" "eso_ecr_pull" {
   count = !var.is_hub ? 1 : 0
 
-  name        = "${var.cluster_name}-eso-hub-ecr-pull-policy"
+  name        = "eso-hub-ecr-pull-policy"
   description = "Allows pulling images from the Hub ECR dynamically"
 
   policy = jsonencode({
