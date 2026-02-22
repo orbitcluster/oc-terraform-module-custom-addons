@@ -3,12 +3,6 @@
 ################################################################################
 
 locals {
-  # ESO is mandatory for spoke clusters
-  install_eso = !var.is_hub
-
-  # Only create IRSA and related resources if it's a spoke cluster
-  setup_hub_ecr_pull = local.install_eso
-
   eso_namespace           = "external-secrets"
   eso_serviceaccount_name = "eso-service-account"
 
@@ -20,7 +14,7 @@ locals {
 ################################################################################
 
 resource "aws_iam_role" "eso_hub_ecr_role" {
-  count = local.setup_hub_ecr_pull ? 1 : 0
+  count = !var.is_hub ? 1 : 0
 
   name = local.eso_role_name
 
@@ -59,7 +53,7 @@ resource "aws_iam_role" "eso_hub_ecr_role" {
 }
 
 resource "aws_iam_policy" "eso_ecr_pull" {
-  count = local.setup_hub_ecr_pull ? 1 : 0
+  count = !var.is_hub ? 1 : 0
 
   name        = "${var.cluster_name}-eso-hub-ecr-pull-policy"
   description = "Allows pulling images from the Hub ECR dynamically"
@@ -91,7 +85,7 @@ resource "aws_iam_policy" "eso_ecr_pull" {
 }
 
 resource "aws_iam_role_policy_attachment" "eso_ecr_pull_attachment" {
-  count = local.setup_hub_ecr_pull ? 1 : 0
+  count = !var.is_hub ? 1 : 0
 
   role       = aws_iam_role.eso_hub_ecr_role[0].name
   policy_arn = aws_iam_policy.eso_ecr_pull[0].arn
@@ -102,7 +96,7 @@ resource "aws_iam_role_policy_attachment" "eso_ecr_pull_attachment" {
 ################################################################################
 
 resource "kubernetes_namespace" "eso" {
-  count = local.install_eso ? 1 : 0
+  count = !var.is_hub ? 1 : 0
 
   metadata {
     name = local.eso_namespace
@@ -117,7 +111,7 @@ resource "kubernetes_namespace" "eso" {
 ################################################################################
 
 resource "helm_release" "external_secrets" {
-  count = local.install_eso ? 1 : 0
+  count = !var.is_hub ? 1 : 0
 
   name       = "external-secrets"
   repository = "https://charts.external-secrets.io"
@@ -127,7 +121,7 @@ resource "helm_release" "external_secrets" {
 
   values = [
     templatefile("${path.module}/yamls/external-secrets-values.yaml", {
-      eso_irsa_arn_annotation = local.setup_hub_ecr_pull ? jsonencode({
+      eso_irsa_arn_annotation = !var.is_hub ? jsonencode({
         "eks.amazonaws.com/role-arn" = aws_iam_role.eso_hub_ecr_role[0].arn
       }) : "{}"
     })
@@ -144,7 +138,7 @@ resource "helm_release" "external_secrets" {
 ################################################################################
 
 resource "kubectl_manifest" "eso_ecr_auth_token" {
-  count = local.setup_hub_ecr_pull ? 1 : 0
+  count = !var.is_hub ? 1 : 0
 
   yaml_body = <<-YAML
     apiVersion: generators.external-secrets.io/v1alpha1
@@ -162,7 +156,7 @@ resource "kubectl_manifest" "eso_ecr_auth_token" {
 }
 
 resource "kubectl_manifest" "eso_external_secret" {
-  count = local.setup_hub_ecr_pull ? 1 : 0
+  count = !var.is_hub ? 1 : 0
 
   yaml_body = <<-YAML
     apiVersion: external-secrets.io/v1beta1
@@ -192,7 +186,7 @@ resource "kubectl_manifest" "eso_external_secret" {
 }
 
 resource "kubectl_manifest" "eso_cluster_external_secret" {
-  count = local.setup_hub_ecr_pull ? 1 : 0
+  count = !var.is_hub ? 1 : 0
 
   yaml_body = <<-YAML
     apiVersion: external-secrets.io/v1beta1
