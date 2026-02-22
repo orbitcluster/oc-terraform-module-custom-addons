@@ -142,12 +142,13 @@ resource "kubectl_manifest" "eso_ecr_auth_token" {
 
   yaml_body = <<-YAML
     apiVersion: generators.external-secrets.io/v1alpha1
-    kind: ECRAuthorizationToken
+    kind: ClusterGenerator
     metadata:
       name: hub-ecr-token-gen
-      namespace: ${local.eso_namespace}
     spec:
-      region: ${data.aws_region.current.name}
+      kind: ECRAuthorizationToken
+      generator:
+        region: ${data.aws_region.current.name}
   YAML
 
   depends_on = [
@@ -176,7 +177,7 @@ resource "kubectl_manifest" "eso_external_secret" {
       - sourceRef:
           generatorRef:
             apiVersion: generators.external-secrets.io/v1alpha1
-            kind: ECRAuthorizationToken
+            kind: ClusterGenerator
             name: hub-ecr-token-gen
   YAML
 
@@ -199,6 +200,20 @@ resource "kubectl_manifest" "eso_cluster_external_secret" {
       namespaceSelector:
         matchLabels:
           allow-hub-ecr-pull: "true"
+      externalSecretSpec:
+        refreshInterval: "1h"
+        target:
+          name: hub-ecr-docker-secret
+          template:
+            type: kubernetes.io/dockerconfigjson
+            data:
+              .dockerconfigjson: '{"auths": {"${var.hub_account_id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com": {"username": "AWS", "password": "{{ .password }}"}}}'
+        dataFrom:
+        - sourceRef:
+            generatorRef:
+              apiVersion: generators.external-secrets.io/v1alpha1
+              kind: ClusterGenerator
+              name: hub-ecr-token-gen
   YAML
 
   depends_on = [
