@@ -6,7 +6,7 @@ locals {
   eso_namespace           = "external-secrets"
   eso_serviceaccount_name = "eso-service-account"
 
-  eso_role_name = "eso-hub-ecr-role"
+  eso_role_name = "eso-spoke-ecr-role"
 }
 
 ################################################################################
@@ -55,31 +55,23 @@ resource "aws_iam_role" "eso_hub_ecr_role" {
 resource "aws_iam_policy" "eso_ecr_pull" {
   count = !var.is_hub ? 1 : 0
 
-  name        = "eso-hub-ecr-pull-policy"
-  description = "Allows pulling images from the Hub ECR dynamically"
+  name        = "${var.cluster_name}-eso-assume-ecr-hub"
+  description = "Allows assuming the ecr-hub-role in the hub account for ECR access"
 
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
-        Action   = ["ecr:GetAuthorizationToken"]
-        Effect   = "Allow"
-        Resource = "*"
-      },
-      {
-        Action = [
-          "ecr:BatchGetImage",
-          "ecr:GetDownloadUrlForLayer",
-          "ecr:BatchCheckLayerAvailability"
-        ]
-        Effect   = "Allow"
-        Resource = "arn:aws:ecr:*:${var.hub_account_id}:repository/*"
+        Action = ["sts:AssumeRole"]
+        Effect = "Allow"
+        # Since ecr_hub_role_name in hub is now strictly "ecr-hub-role" (based on your recent change)
+        Resource = "arn:aws:iam::${var.hub_account_id}:role/ecr-hub-role"
       }
     ]
   })
 
   tags = merge(var.tags, {
-    Name      = "${var.cluster_name}-eso-hub-ecr-pull-policy"
+    Name      = "${var.cluster_name}-eso-assume-ecr-hub-policy"
     ManagedBy = "terraform-custom-addons"
   })
 }
