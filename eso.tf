@@ -124,6 +124,14 @@ resource "helm_release" "external_secrets" {
   ]
 }
 
+resource "time_sleep" "wait_for_eso_crds" {
+  count = !var.is_hub ? 1 : 0
+
+  depends_on = [helm_release.external_secrets]
+
+  create_duration = "30s"
+}
+
 ################################################################################
 # 4. ESO Custom Resources (for Token Generation and Distribution)
 # Note: These are only created on Spoke clusters pulling from Hub ECR.
@@ -143,7 +151,7 @@ resource "kubectl_manifest" "eso_ecr_auth_token" {
   YAML
 
   depends_on = [
-    helm_release.external_secrets
+    time_sleep.wait_for_eso_crds
   ]
 }
 
@@ -151,7 +159,7 @@ resource "kubectl_manifest" "eso_external_secret" {
   count = !var.is_hub ? 1 : 0
 
   yaml_body = <<-YAML
-    apiVersion: external-secrets.io/v1beta1
+    apiVersion: external-secrets.io/v1
     kind: ExternalSecret
     metadata:
       name: hub-ecr-docker-secret
@@ -173,7 +181,8 @@ resource "kubectl_manifest" "eso_external_secret" {
   YAML
 
   depends_on = [
-    kubectl_manifest.eso_ecr_auth_token
+    kubectl_manifest.eso_ecr_auth_token,
+    time_sleep.wait_for_eso_crds
   ]
 }
 
@@ -181,7 +190,7 @@ resource "kubectl_manifest" "eso_cluster_external_secret" {
   count = !var.is_hub ? 1 : 0
 
   yaml_body = <<-YAML
-    apiVersion: external-secrets.io/v1beta1
+    apiVersion: external-secrets.io/v1
     kind: ClusterExternalSecret
     metadata:
       name: distribute-hub-ecr-secret
@@ -193,6 +202,7 @@ resource "kubectl_manifest" "eso_cluster_external_secret" {
   YAML
 
   depends_on = [
-    kubectl_manifest.eso_external_secret
+    kubectl_manifest.eso_external_secret,
+    time_sleep.wait_for_eso_crds
   ]
 }
