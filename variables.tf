@@ -132,6 +132,16 @@ variable "tags" {
 
 ##################################################
 
+################ESO CONFIG########################
+
+variable "eso_helm_version" {
+  description = "Version of the External Secrets Operator Helm chart"
+  type        = string
+  default     = "1.3.2"
+}
+
+##################################################
+
 ################HUB-SPOKE CONFIG##################
 
 variable "hub_cluster_name" {
