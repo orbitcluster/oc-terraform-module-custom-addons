@@ -67,7 +67,7 @@ resource "aws_iam_role_policy" "argocd_ecr_updater_policy" {
 }
 
 # 3. Service Account
-resource "kubernetes_service_account" "argocd_ecr_updater" {
+resource "kubernetes_service_account_v1" "argocd_ecr_updater" {
   count = var.is_hub ? 1 : 0
 
   metadata {
@@ -116,7 +116,7 @@ resource "kubernetes_role_binding" "argocd_secret_patcher" {
 
   subject {
     kind      = "ServiceAccount"
-    name      = kubernetes_service_account.argocd_ecr_updater[0].metadata[0].name
+    name      = kubernetes_service_account_v1.argocd_ecr_updater[0].metadata[0].name
     namespace = local.argocd_namespace
   }
 }
@@ -141,7 +141,7 @@ resource "kubernetes_cron_job_v1" "argocd_ecr_updater" {
         template {
           metadata {}
           spec {
-            service_account_name = kubernetes_service_account.argocd_ecr_updater[0].metadata[0].name
+            service_account_name = kubernetes_service_account_v1.argocd_ecr_updater[0].metadata[0].name
             restart_policy       = "OnFailure"
 
             container {
