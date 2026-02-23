@@ -137,6 +137,15 @@ resource "time_sleep" "wait_for_eso_crds" {
 # Note: These are only created on Spoke clusters pulling from Hub ECR.
 ################################################################################
 
+# ------------------------------------------------------------------------------
+# 1. ClusterGenerator: (ESO Custom Resource)
+# This resource tells External Secrets Operator HOW to fetch credentials.
+# Instead of a static AWS Key/Secret, it uses the 'ECRAuthorizationToken' generator.
+# Parameters:
+# - ecrAuthorizationTokenSpec.region: The AWS region of the ECR repository.
+# - ecrAuthorizationTokenSpec.role: The IAM Role ARN to assume *in the Hub account*.
+# Because this is a *Cluster*Generator, it is available globally to all namespaces.
+# ------------------------------------------------------------------------------
 resource "kubectl_manifest" "eso_ecr_auth_token" {
   count = !var.is_hub ? 1 : 0
 
@@ -150,6 +159,7 @@ resource "kubectl_manifest" "eso_ecr_auth_token" {
       generator:
         ecrAuthorizationTokenSpec:
           region: ${data.aws_region.current.name}
+          role: "arn:aws:iam::${var.hub_account_id}:role/ecr-hub-role"
   YAML
 
   depends_on = [
@@ -157,6 +167,17 @@ resource "kubectl_manifest" "eso_ecr_auth_token" {
   ]
 }
 
+# ------------------------------------------------------------------------------
+# 2. ExternalSecret: (ESO Custom Resource)
+# This resource connects the Generator (HOW) to a Kubernetes Secret (WHAT).
+# Parameters:
+# - spec.refreshInterval: How often to fetch a new token (ECR tokens expire in 12h, 1h is safe).
+# - spec.target.name: The name of the native Kubernetes Secret it will create.
+# - spec.target.template.type: Creates a Docker registry pull secret format rather than Opaque.
+# - spec.target.template.data: Formats the raw password from the generator into dockerconfigjson.
+# - spec.dataFrom.sourceRef: Points backwards to the 'hub-ecr-token-gen' ClusterGenerator.
+# Note: This creates the source secret *only* in the ESO installation namespace.
+# ------------------------------------------------------------------------------
 resource "kubectl_manifest" "eso_external_secret" {
   count = !var.is_hub ? 1 : 0
 
@@ -188,6 +209,16 @@ resource "kubectl_manifest" "eso_external_secret" {
   ]
 }
 
+# ------------------------------------------------------------------------------
+# 3. ClusterExternalSecret: (ESO Custom Resource)
+# This resource distributes the created Kubernetes Secret to all target application namespaces.
+# Parameters:
+# - spec.externalSecretName: The name of the ExternalSecret to duplicate.
+# - spec.namespaceSelector: Defines *which* namespaces receive this secret.
+#                           (Any namespace labeled with allow-hub-ecr-pull="true").
+# - spec.externalSecretSpec: A carbon copy of the ExternalSecret spec above. It tells ESO
+#                            exactly how to construct the duplicated secrets in the target namespaces.
+# ------------------------------------------------------------------------------
 resource "kubectl_manifest" "eso_cluster_external_secret" {
   count = !var.is_hub ? 1 : 0
 
