@@ -146,9 +146,9 @@ resource "kubectl_manifest" "eso_ecr_auth_token" {
     metadata:
       name: hub-ecr-token-gen
     spec:
-      kind: ECRAuthorizationToken
       generator:
-        region: ${data.aws_region.current.name}
+        ecrAuthorizationTokenSpec:
+          region: ${data.aws_region.current.name}
   YAML
 
   depends_on = [
